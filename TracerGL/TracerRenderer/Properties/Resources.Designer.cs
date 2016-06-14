@@ -59,25 +59,5 @@ namespace TracerRenderer.Properties {
                 resourceCulture = value;
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] default_frag {
-            get {
-                object obj = ResourceManager.GetObject("default_frag", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] default_vert {
-            get {
-                object obj = ResourceManager.GetObject("default_vert", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
     }
 }

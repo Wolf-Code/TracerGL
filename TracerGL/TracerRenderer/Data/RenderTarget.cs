@@ -9,6 +9,8 @@ namespace TracerRenderer.Data
 
         public int ColorTexture { private set; get; }
 
+        public int DepthTexture { private set; get; }
+
         private readonly int width;
         private readonly int height;
 
@@ -26,7 +28,7 @@ namespace TracerRenderer.Data
 
             // assign texture to FBO
             GL.Ext.FramebufferTexture2D( FramebufferTarget.DrawFramebuffer, FramebufferAttachment.ColorAttachment0Ext, TextureTarget.Texture2D, colorTexture, 0 );
-            GL.Ext.FramebufferRenderbuffer( FramebufferTarget.FramebufferExt, FramebufferAttachment.DepthAttachmentExt, RenderbufferTarget.RenderbufferExt, depthBuffer );
+            GL.Ext.FramebufferRenderbuffer( FramebufferTarget.DrawFramebuffer, FramebufferAttachment.DepthAttachmentExt, RenderbufferTarget.RenderbufferExt, depthBuffer );
 
             #region Test for Error
 
@@ -86,9 +88,10 @@ namespace TracerRenderer.Data
 
             #endregion Test for Error
 
-            GL.Ext.BindFramebuffer( FramebufferTarget.FramebufferExt, 0 ); // disable rendering into the FBO
+            GL.Ext.BindFramebuffer( FramebufferTarget.DrawFramebuffer, 0 ); // disable rendering into the FBO
 
             ColorTexture = colorTexture;
+            DepthTexture = DepthTexture;
         }
 
         private void CreateNullTexture( out int texture )
@@ -99,13 +102,13 @@ namespace TracerRenderer.Data
             // Still required else TexImage2D will be applyed on the last bound texture
             GL.BindTexture( TextureTarget.Texture2D, texture );
 
-            GL.TexParameter( TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, ( int )TextureMinFilter.Nearest );
-            GL.TexParameter( TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, ( int )TextureMagFilter.Nearest );
+            GL.TexParameter( TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, ( int )TextureMinFilter.Linear );
+            GL.TexParameter( TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, ( int )TextureMagFilter.Linear );
             GL.TexParameter( TextureTarget.Texture2D, TextureParameterName.TextureWrapS, ( int )TextureWrapMode.Clamp );
             GL.TexParameter( TextureTarget.Texture2D, TextureParameterName.TextureWrapT, ( int )TextureWrapMode.Clamp );
 
             // generate null texture
-            GL.TexImage2D( TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba8, width, height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, IntPtr.Zero );
+            GL.TexImage2D( TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, width, height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, IntPtr.Zero );
 
             GL.BindTexture( TextureTarget.Texture2D, 0 );
         }

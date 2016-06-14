@@ -28,12 +28,14 @@ namespace TracerRenderer
 
             vertexBuffer = GL.GenBuffer( );
             GL.BindBuffer( BufferTarget.ArrayBuffer, vertexBuffer );
-            GL.BufferData( BufferTarget.ArrayBuffer, new IntPtr( Vertex.SizeInBytes * vertices.Length ), vertices, BufferUsageHint.StaticDraw );
+            GL.BufferData( BufferTarget.ArrayBuffer, new IntPtr( Vertex.SizeInBytes * vertices.Length ), vertices,
+                BufferUsageHint.StaticDraw );
             GL.BindBuffer( BufferTarget.ArrayBuffer, 0 );
 
             indicesBuffer = GL.GenBuffer( );
             GL.BindBuffer( BufferTarget.ElementArrayBuffer, indicesBuffer );
-            GL.BufferData( BufferTarget.ElementArrayBuffer, new IntPtr( sizeof( uint ) * indexArray.Length ), indexArray, BufferUsageHint.StaticDraw  );
+            GL.BufferData( BufferTarget.ElementArrayBuffer, new IntPtr( sizeof ( uint ) * indexArray.Length ),
+                indexArray, BufferUsageHint.StaticDraw );
             GL.BindBuffer( BufferTarget.ElementArrayBuffer, 0 );
 
             elementCount = indexArray.Length;
@@ -49,7 +51,16 @@ namespace TracerRenderer
             {
                 // Vertex Array Buffer
                 GL.BindBuffer( BufferTarget.ArrayBuffer, vertexBuffer );
-                GL.VertexAttribPointer( 0, 3, VertexAttribPointerType.Float, false, Vertex.SizeInBytes, ( IntPtr ) ( 5 * sizeof ( float ) ) );
+
+                GL.VertexAttribPointer( 2, 2, VertexAttribPointerType.Float, false, Vertex.SizeInBytes, IntPtr.Zero );
+                GL.VertexAttribPointer( 1, 2, VertexAttribPointerType.Float, false, Vertex.SizeInBytes,
+                    ( IntPtr ) ( 2 * sizeof ( float ) ) );
+                GL.VertexAttribPointer( 0, 3, VertexAttribPointerType.Float, false, Vertex.SizeInBytes,
+                    ( IntPtr ) ( 5 * sizeof ( float ) ) );
+
+                Shader.BindAttributeLocation( "position", 0 );
+                Shader.BindAttributeLocation( "normal", 1 );
+                Shader.BindAttributeLocation( "texcoords", 2 );
 
                 // Index Array Buffer
                 GL.BindBuffer( BufferTarget.ElementArrayBuffer, indicesBuffer );
@@ -59,7 +70,7 @@ namespace TracerRenderer
                 GL.DrawElements( BeginMode.Triangles, elementCount, DrawElementsType.UnsignedInt, IntPtr.Zero );
             }
             for ( int x = 0; x < vertexAttribs; x++ )
-                GL.DisableVertexAttribArray( 0 );
+                GL.DisableVertexAttribArray( x );
         }
     }
 }

@@ -11,7 +11,7 @@ namespace TracerGL
 {
     class Window : GameWindow
     {
-        private Model mdl, mdl2, mdl3;
+        private Model mdl, mdl2, mdl3, quad;
         private Camera cam;
         private Shader textured;
         private World world;
@@ -21,12 +21,12 @@ namespace TracerGL
             GL.Enable( EnableCap.Texture2D );
             GL.Enable( EnableCap.DepthTest );
 
-            Vertex v1 = new Vertex { Position = new Vector3( -4, -1, 0 ) };
-            Vertex v2 = new Vertex { Position = new Vector3( 1, -1, 0 ) };
-            Vertex v3 = new Vertex { Position = new Vector3( 0, 1, 0 ) };
+            Vertex v1 = new Vertex { Position = new Vector3( -4, -1, 0 ), TexCoord = new Vector2( 0, 0 ) };
+            Vertex v2 = new Vertex { Position = new Vector3( 1, -1, 0 ), TexCoord = new Vector2( 1, 0 ) };
+            Vertex v3 = new Vertex { Position = new Vector3( 0, 1, 0 ), TexCoord = new Vector2( 0, 1 ) };
 
             Vertex[ ] vertices = { v1, v2, v3 };
-            Face[ ] faces = { new Face { Vertices = new uint[ ]{ 0, 1, 2 } } };
+            Face[ ] faces = { new Face { Vertices = new uint[ ] { 0, 1, 2 } } };
             mdl = new Model( vertices, faces );
             mdl2 = new Model( vertices, faces )
             {
@@ -45,9 +45,10 @@ namespace TracerGL
                 }
             };
 
+
             world = new World( );
-            world.AddModel( mdl2 );
             world.AddModel( mdl );
+            world.AddModel( mdl2 );
             world.AddModel( mdl3 );
             GL.ClearColor( Color4.CornflowerBlue );
 
@@ -72,6 +73,16 @@ namespace TracerGL
             textured.AddShader( File.ReadAllText( "Shaders/texturedQuad.frag" ), ShaderType.FragmentShader );
             textured.AddShader( File.ReadAllText( "Shaders/texturedQuad.vert" ), ShaderType.VertexShader );
             textured.Link( );
+
+            quad = new Model( new[ ]
+            {
+                new Vertex { Position = new Vector3( -1, -1, 0 ), TexCoord = new Vector2( 0, 0 ) },
+                new Vertex { Position = new Vector3( -1, 1, 0 ), TexCoord = new Vector2( 0, 1 ) },
+                new Vertex { Position = new Vector3( 1, 1, 0 ), TexCoord = new Vector2( 1, 1 ) },
+                new Vertex { Position = new Vector3( 1, -1, 0 ), TexCoord = new Vector2( 1, 0 ) }
+            }, new[ ] { new Face { Vertices = new uint[ ] { 0, 1, 2, 2, 3, 0 } } } );
+            quad.Shader = textured;
+
 
             base.OnLoad( e );
         }
@@ -123,40 +134,38 @@ namespace TracerGL
             // Enable depth testing so our cube draws correctly
             GL.Enable( EnableCap.DepthTest );
             
+            // Get the view * projection matrix.
             Matrix4 view = cam.GetMatrix( );
             Matrix4 VP = view * cam.Projection;
 
+            // We want to render to the framebuffer.
             cam.BindForRendering( );
             {
                 GL.Clear( ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit );
 
-                for ( int index = 0; index < world.Models.Count; index++ )
+                foreach ( Model model in world.Models )
                 {
-                    Model model = world.Models[ index ];
+                    model.Shader.Use( );
                     model.Shader.BindAttributeLocation( "position", 0 );
                     model.Shader.SetMatrix( "MVP", model.Transform.GetMatrix( ) * VP );
                     model.Render( );
                 }
             }
+            // And we want to stop rendering to the framebuffer.
             cam.RenderTarget.Unbind( );
 
+            // Render the fullscreen quad containing the framebuffer's texture.
             DrawFullscreenQuad( );
-
-
-
+            
             SwapBuffers( );
         }
 
         private void DrawFullscreenQuad( )
         {
-            GL.UseProgram( 0 );
-            GL.BindTexture( TextureTarget.Texture2D, cam.RenderTarget.ColorTexture );
-            GL.Begin( BeginMode.Quads );
-            GL.TexCoord2( 0.0f, 0.0f ); GL.Vertex3( -1.0f, -1.0f, 0.0f );
-            GL.TexCoord2( 0.0f, 1.0f ); GL.Vertex3( -1.0f, 1.0f, 0.0f );
-            GL.TexCoord2( 1.0f, 1.0f ); GL.Vertex3( 1.0f, 1.0f, 0.0f );
-            GL.TexCoord2( 1.0f, 0.0f ); GL.Vertex3( 1.0f, -1.0f, 0.0f );
-            GL.End( );
+            textured.Use( );
+            textured.SetTexture( "quadTexture", cam.RenderTarget.ColorTexture );
+
+            quad.Render( );
         }
     }
 }

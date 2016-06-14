@@ -9,8 +9,10 @@ namespace TracerRenderer
     public class Shader
     {
         private readonly Dictionary<string, int> uniformLocations = new Dictionary<string, int>( );
-        private readonly List<int> addedShaders = new List<int>( ); 
-         
+        private readonly List<int> addedShaders = new List<int>( );
+
+        private static int inUseShader = 0;
+            
         public static Shader Default
         {
             get
@@ -67,7 +69,14 @@ namespace TracerRenderer
 
         public void Use( )
         {
+            inUseShader = programID;
             GL.UseProgram( programID );
+        }
+
+        public static void UseDefault( )
+        {
+            GL.UseProgram( 0 );
+            inUseShader = 0;
         }
 
         public int GetAttributeLocation( string name )
@@ -77,6 +86,7 @@ namespace TracerRenderer
 
         public void BindAttributeLocation( string name, int location )
         {
+            CheckIfCurrentShader( );
             GL.BindAttribLocation( programID, location, name );
         }
 
@@ -93,8 +103,24 @@ namespace TracerRenderer
 
         public void SetMatrix( string name, Matrix4 matrix )
         {
+            CheckIfCurrentShader( );
+
             int loc = GetUniformLocation( name );
             GL.UniformMatrix4( loc, false, ref matrix );
+        }
+
+        public void SetTexture( string samplerName, int texture )
+        {
+            GL.ActiveTexture( TextureUnit.Texture0 + texture );
+            GL.BindTexture( TextureTarget.Texture2D, texture );
+            GL.Uniform1( GetUniformLocation( samplerName ), texture );
+        }
+
+        private void CheckIfCurrentShader( )
+        {
+            if ( programID != inUseShader )
+                throw new Exception(
+                    "Attempting to use shader, without setting it as the current shader first. Try running Shader.Use( ) before attempting to use it." );
         }
     }
 }

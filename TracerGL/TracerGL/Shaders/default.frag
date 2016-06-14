@@ -1,9 +1,9 @@
 ﻿#version 330
 
 out vec4 color_output;
-in vec3 pos;
+in vec2 uv;
 
 void main( )
 {
-	color_output = vec4(pos, 1.0);
+	color_output = vec4(uv, 0.0, 1.0);
 }
