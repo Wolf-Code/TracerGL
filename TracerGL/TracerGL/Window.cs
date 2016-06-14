@@ -18,9 +18,6 @@ namespace TracerGL
 
         protected override void OnLoad( EventArgs e )
         {
-            GL.Enable( EnableCap.Texture2D );
-            GL.Enable( EnableCap.DepthTest );
-
             Vertex v1 = new Vertex { Position = new Vector3( -4, -1, 0 ), TexCoord = new Vector2( 0, 0 ) };
             Vertex v2 = new Vertex { Position = new Vector3( 1, -1, 0 ), TexCoord = new Vector2( 1, 0 ) };
             Vertex v3 = new Vertex { Position = new Vector3( 0, 1, 0 ), TexCoord = new Vector2( 0, 1 ) };
@@ -54,11 +51,7 @@ namespace TracerGL
 
             cam = new Camera( Width, Height )
             {
-                Transform = new Transform
-                {
-                    Position = new Vector3( 0, 0, -10 ),
-                    Rotation = new Angle( 0, 0, 0 )
-                }
+                Transform = new Transform( new Vector3( 0, 0, -10 ) )
             };
 
             Mouse.Move += ( sender, args ) =>
@@ -80,8 +73,7 @@ namespace TracerGL
                 new Vertex { Position = new Vector3( -1, 1, 0 ), TexCoord = new Vector2( 0, 1 ) },
                 new Vertex { Position = new Vector3( 1, 1, 0 ), TexCoord = new Vector2( 1, 1 ) },
                 new Vertex { Position = new Vector3( 1, -1, 0 ), TexCoord = new Vector2( 1, 0 ) }
-            }, new[ ] { new Face { Vertices = new uint[ ] { 0, 1, 2, 2, 3, 0 } } } );
-            quad.Shader = textured;
+            }, new[ ] { new Face { Vertices = new uint[ ] { 0, 1, 2, 2, 3, 0 } } } ) { Shader = textured };
 
 
             base.OnLoad( e );
@@ -97,11 +89,7 @@ namespace TracerGL
 
             cam = new Camera( Width, Height )
             {
-                Transform = new Transform( )
-                {
-                    Position = cam.Transform.Position,
-                    Rotation = cam.Transform.Rotation
-                }
+                Transform = new Transform( cam.Transform.Position, cam.Transform.Rotation )
             };
         }
 

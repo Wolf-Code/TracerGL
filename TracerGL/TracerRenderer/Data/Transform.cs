@@ -26,5 +26,21 @@ namespace TracerRenderer.Data
             this.Rotation = new Angle( );
             this.Position = new Vector3( );
         }
+
+        public Transform( Vector3 position ) : this( )
+        {
+            this.Position = position;
+        }
+
+        public Transform( Angle angle ) : this( )
+        {
+            this.Rotation = angle;
+        }
+
+        public Transform( Vector3 position, Angle angle ) : this( )
+        {
+            this.Position = position;
+            this.Rotation = angle;
+        }
     }
 }
