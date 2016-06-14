@@ -1,5 +1,4 @@
 ﻿using OpenTK;
-using OpenTK.Graphics.OpenGL;
 using TracerRenderer.Data;
 
 namespace TracerRenderer
@@ -14,13 +13,17 @@ namespace TracerRenderer
 
         public Matrix4 GetMatrix( ) => Matrix4.LookAt( Transform.Position, Transform.Position + Transform.Forward, Transform.Up );
 
-        public Camera( )
+        public RenderTarget RenderTarget { private set; get; }
+
+        public Camera( int width, int height )
         {
             this.m_aspect = 1;
             this.m_fov = 70;
             this.m_near = 1;
             this.m_far = 1000;
             this.Update( );
+
+            RenderTarget = new RenderTarget( width, height );
         }
 
         public void SetAspect( float aspect )
@@ -44,6 +47,11 @@ namespace TracerRenderer
         private void Update( )
         {
             Projection = Matrix4.CreatePerspectiveFieldOfView( MathHelper.DegreesToRadians( m_fov ), m_aspect, m_near, m_far );
+        }
+
+        public void BindForRendering( )
+        {
+            RenderTarget.Bind( );
         }
     }
 }

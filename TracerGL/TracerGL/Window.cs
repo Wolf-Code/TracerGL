@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
@@ -10,10 +11,16 @@ namespace TracerGL
 {
     class Window : GameWindow
     {
-        private Model mdl, mdl2;
+        private Model mdl, mdl2, mdl3;
         private Camera cam;
+        private Shader textured;
+        private World world;
+
         protected override void OnLoad( EventArgs e )
         {
+            GL.Enable( EnableCap.Texture2D );
+            GL.Enable( EnableCap.DepthTest );
+
             Vertex v1 = new Vertex { Position = new Vector3( -4, -1, 0 ) };
             Vertex v2 = new Vertex { Position = new Vector3( 1, -1, 0 ) };
             Vertex v3 = new Vertex { Position = new Vector3( 0, 1, 0 ) };
@@ -21,14 +28,32 @@ namespace TracerGL
             Vertex[ ] vertices = { v1, v2, v3 };
             Face[ ] faces = { new Face { Vertices = new uint[ ]{ 0, 1, 2 } } };
             mdl = new Model( vertices, faces );
-            mdl2 = new Model( vertices, faces );
-            mdl2.Transform.Position=new Vector3(5,0,0);
-            mdl2.Transform.Rotation=new Angle( 30, 30, 10 );
+            mdl2 = new Model( vertices, faces )
+            {
+                Transform =
+                {
+                    Position = new Vector3( 5, 0, 0 ),
+                    Rotation = new Angle( 30, 30, 10 )
+                }
+            };
+            mdl3 = new Model( vertices, faces )
+            {
+                Transform =
+                {
+                    Position = new Vector3( -5, 0, 0 ),
+                    Rotation = new Angle( 30, 30, 10 )
+                }
+            };
+
+            world = new World( );
+            world.AddModel( mdl2 );
+            world.AddModel( mdl );
+            world.AddModel( mdl3 );
             GL.ClearColor( Color4.CornflowerBlue );
 
-            cam = new Camera
+            cam = new Camera( Width, Height )
             {
-                Transform = new Transform( )
+                Transform = new Transform
                 {
                     Position = new Vector3( 0, 0, -10 ),
                     Rotation = new Angle( 0, 0, 0 )
@@ -43,6 +68,11 @@ namespace TracerGL
                 cam.Transform.Rotation.Pitch -= args.YDelta * 0.2f;
             };
 
+            textured = new Shader( );
+            textured.AddShader( File.ReadAllText( "Shaders/texturedQuad.frag" ), ShaderType.FragmentShader );
+            textured.AddShader( File.ReadAllText( "Shaders/texturedQuad.vert" ), ShaderType.VertexShader );
+            textured.Link( );
+
             base.OnLoad( e );
         }
 
@@ -53,6 +83,15 @@ namespace TracerGL
             // Set the viewport
             GL.Viewport( 0, 0, Width, Height );
             cam.SetAspect( Width / ( float ) Height );
+
+            cam = new Camera( Width, Height )
+            {
+                Transform = new Transform( )
+                {
+                    Position = cam.Transform.Position,
+                    Rotation = cam.Transform.Rotation
+                }
+            };
         }
 
         protected override void OnUpdateFrame( FrameEventArgs e )
@@ -86,18 +125,38 @@ namespace TracerGL
             
             Matrix4 view = cam.GetMatrix( );
             Matrix4 VP = view * cam.Projection;
-            Matrix4 MVP = mdl.Transform.GetMatrix(  ) * VP;
 
-            mdl.Shader.BindAttributeLocation( "position", 0 );
-            mdl.Shader.SetMatrix( "MVP", MVP );
-            mdl.Render( );
+            cam.BindForRendering( );
+            {
+                GL.Clear( ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit );
 
-            MVP = mdl2.Transform.GetMatrix(  ) * VP;
-            mdl2.Shader.BindAttributeLocation( "position", 0 );
-            mdl2.Shader.SetMatrix( "MVP", MVP );
-            mdl2.Render( );
+                for ( int index = 0; index < world.Models.Count; index++ )
+                {
+                    Model model = world.Models[ index ];
+                    model.Shader.BindAttributeLocation( "position", 0 );
+                    model.Shader.SetMatrix( "MVP", model.Transform.GetMatrix( ) * VP );
+                    model.Render( );
+                }
+            }
+            cam.RenderTarget.Unbind( );
+
+            DrawFullscreenQuad( );
+
+
 
             SwapBuffers( );
+        }
+
+        private void DrawFullscreenQuad( )
+        {
+            GL.UseProgram( 0 );
+            GL.BindTexture( TextureTarget.Texture2D, cam.RenderTarget.ColorTexture );
+            GL.Begin( BeginMode.Quads );
+            GL.TexCoord2( 0.0f, 0.0f ); GL.Vertex3( -1.0f, -1.0f, 0.0f );
+            GL.TexCoord2( 0.0f, 1.0f ); GL.Vertex3( -1.0f, 1.0f, 0.0f );
+            GL.TexCoord2( 1.0f, 1.0f ); GL.Vertex3( 1.0f, 1.0f, 0.0f );
+            GL.TexCoord2( 1.0f, 0.0f ); GL.Vertex3( 1.0f, -1.0f, 0.0f );
+            GL.End( );
         }
     }
 }

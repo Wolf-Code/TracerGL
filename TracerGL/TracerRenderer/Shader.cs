@@ -1,34 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
-using TracerRenderer.Properties;
 
 namespace TracerRenderer
 {
     public class Shader
     {
-        private static Shader defaultShader;
         private readonly Dictionary<string, int> uniformLocations = new Dictionary<string, int>( );
+        private readonly List<int> addedShaders = new List<int>( ); 
          
         public static Shader Default
         {
             get
             {
-                if ( defaultShader != null ) return defaultShader;
+                string vertexShader = File.ReadAllText( "Shaders/default.vert" );
+                string fragmentShader = File.ReadAllText( "Shaders/default.frag" );
 
-
-                string vertexShader, fragmentShader;
-
-                using ( TextReader read = new StreamReader( new MemoryStream( Resources.default_vert ) ) )
-                    vertexShader = read.ReadToEnd( );
-
-                using ( TextReader read = new StreamReader( new MemoryStream( Resources.default_frag ) ) )
-                    fragmentShader = read.ReadToEnd( );
-
-                defaultShader = new Shader( );
+                Shader defaultShader = new Shader( );
                 defaultShader.AddShader( vertexShader, ShaderType.VertexShader );
                 defaultShader.AddShader( fragmentShader, ShaderType.FragmentShader );
                 defaultShader.Link( );
@@ -52,6 +42,7 @@ namespace TracerRenderer
             GL.AttachShader( programID, shaderID );
             GL.ShaderSource( shaderID, source );
             GL.CompileShader( shaderID );
+            addedShaders.Add( shaderID );
 
             GL.GetShader( shaderID, ShaderParameter.CompileStatus, out isCompiled );
             if ( isCompiled == 1 ) return true;
@@ -59,7 +50,14 @@ namespace TracerRenderer
             string logInfo;
             GL.GetShaderInfoLog( shaderID, out logInfo );
             Console.WriteLine( "Error compiling " + type + " shader: " + logInfo );
+
             return false;
+        }
+
+        private void RemoveShaders( )
+        {
+            foreach ( int shader in addedShaders )
+                GL.DeleteShader( shader );
         }
 
         public void Link( )

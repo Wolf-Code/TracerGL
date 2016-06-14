@@ -1,10 +1,12 @@
-﻿namespace TracerGL
+﻿using OpenTK;
+
+namespace TracerGL
 {
     class Program
     {
         static void Main( string[ ] args )
         {
-            using ( Window w = new Window( ) )
+            using ( GameWindow w = new Window( ) )
                 w.Run( 60 );
         }
     }

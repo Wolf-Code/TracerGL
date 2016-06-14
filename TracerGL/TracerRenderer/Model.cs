@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using TracerRenderer.Data;
 
@@ -16,15 +15,6 @@ namespace TracerRenderer
         public Shader Shader { set; get; }
 
         public Transform Transform { private set; get; }
-
-        public Matrix4 GetMatrix( )
-        {
-            Vector3 axis;
-            float ang;
-            Transform.Rotation.Quaternion.ToAxisAngle( out axis, out ang );
-
-            return Matrix4.CreateFromAxisAngle( axis, ang ) * Matrix4.CreateTranslation( Transform.Position );
-        }
 
         public Model( Vertex[ ] vertices, Face[ ] faces )
         {

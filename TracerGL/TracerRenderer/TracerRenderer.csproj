@@ -46,7 +46,9 @@
   <ItemGroup>
     <Compile Include="Camera.cs" />
     <Compile Include="Data\Angle.cs" />
+    <Compile Include="Data\RenderTarget.cs" />
     <Compile Include="Data\Transform.cs" />
+    <Compile Include="Data\World.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -65,8 +67,18 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="packages.config" />
-    <EmbeddedResource Include="Shaders\default.frag" />
-    <None Include="Shaders\default.vert" />
+    <Content Include="Shaders\default.frag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Shaders\texturedQuad.vert">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Shaders\texturedQuad.frag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Shaders\default.vert">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

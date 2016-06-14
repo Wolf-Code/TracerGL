@@ -9,5 +9,5 @@ out vec3 pos;
 void main( ) 
 {
 	gl_Position = MVP * position;
-    pos = gl_Position.xyz;
+    pos = position.xyz;
 }
