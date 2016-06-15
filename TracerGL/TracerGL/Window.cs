@@ -6,6 +6,7 @@ using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
 using TracerRenderer;
 using TracerRenderer.Data;
+using TracerRenderer.Renderers;
 
 namespace TracerGL
 {
@@ -14,6 +15,7 @@ namespace TracerGL
         private Model mdl, mdl2, mdl3, quad;
         private Camera cam;
         private Shader textured;
+        private Renderer renderer;
         private World world;
 
         protected override void OnLoad( EventArgs e )
@@ -75,6 +77,7 @@ namespace TracerGL
                 new Vertex { Position = new Vector3( 1, -1, 0 ), TexCoord = new Vector2( 1, 0 ) }
             }, new[ ] { new Face { Vertices = new uint[ ] { 0, 1, 2, 2, 3, 0 } } } ) { Shader = textured };
 
+            renderer = new PathTracingRenderer( );
 
             base.OnLoad( e );
         }
@@ -121,23 +124,13 @@ namespace TracerGL
 
             // Enable depth testing so our cube draws correctly
             GL.Enable( EnableCap.DepthTest );
-            
-            // Get the view * projection matrix.
-            Matrix4 view = cam.GetMatrix( );
-            Matrix4 VP = view * cam.Projection;
 
             // We want to render to the framebuffer.
             cam.BindForRendering( );
             {
                 GL.Clear( ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit );
 
-                foreach ( Model model in world.Models )
-                {
-                    model.Shader.Use( );
-                    model.Shader.BindAttributeLocation( "position", 0 );
-                    model.Shader.SetMatrix( "MVP", model.Transform.GetMatrix( ) * VP );
-                    model.Render( );
-                }
+                renderer.Render( cam, world );
             }
             // And we want to stop rendering to the framebuffer.
             cam.RenderTarget.Unbind( );
