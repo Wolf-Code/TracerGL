@@ -15,6 +15,8 @@ namespace TracerGL
         private Model mdl, mdl2, mdl3, quad;
         private Camera cam;
         private Shader textured;
+        private OpenGLRenderer glRenderer;
+        private PathTracingRenderer traceRenderer;
         private Renderer renderer;
         private World world;
 
@@ -64,6 +66,17 @@ namespace TracerGL
                 cam.Transform.Rotation.Pitch -= args.YDelta * 0.2f;
             };
 
+            Keyboard.KeyDown += ( sender, args ) =>
+            {
+                if ( args.Key == Key.Space )
+                    if ( renderer is OpenGLRenderer )
+                        renderer = traceRenderer;
+                    else
+                        renderer = glRenderer;
+
+                Console.WriteLine( renderer.GetType( ) );
+            };
+
             textured = new Shader( );
             textured.AddShader( File.ReadAllText( "Shaders/texturedQuad.frag" ), ShaderType.FragmentShader );
             textured.AddShader( File.ReadAllText( "Shaders/texturedQuad.vert" ), ShaderType.VertexShader );
@@ -77,7 +90,10 @@ namespace TracerGL
                 new Vertex { Position = new Vector3( 1, -1, 0 ), TexCoord = new Vector2( 1, 0 ) }
             }, new[ ] { new Face { Vertices = new uint[ ] { 0, 1, 2, 2, 3, 0 } } } ) { Shader = textured };
 
-            renderer = new PathTracingRenderer( );
+            traceRenderer = new PathTracingRenderer( 800, 600 );
+            glRenderer = new OpenGLRenderer( );
+
+            renderer = glRenderer;
 
             base.OnLoad( e );
         }

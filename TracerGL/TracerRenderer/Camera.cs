@@ -13,60 +13,68 @@ namespace TracerRenderer
         private float m_aspect, m_fov, m_near, m_far;
         private float fovDivided;
 
-        public Matrix4 GetMatrix()
-            => Matrix4.LookAt(Transform.Position, Transform.Position + Transform.Forward, Transform.Up);
+        public Matrix4 GetMatrix( )
+            => Matrix4.LookAt( Transform.Position, Transform.Position + Transform.Forward, Transform.Up );
 
         public RenderTarget RenderTarget { private set; get; }
 
-        public Camera(int width, int height)
+        public Camera( int width, int height )
         {
-            this.SetAspect(1.0f);
-            this.SetFOV(70);
-            this.SetNearFar(1, 1000);
-            this.Update();
+            this.m_aspect = 1.0f;
+            this.m_near = 1;
+            this.m_far = 1000;
+            this.SetFOV( 70 );
 
-            RenderTarget = new RenderTarget(width, height);
+            RenderTarget = new RenderTarget( width, height );
         }
 
-        public void SetAspect(float aspect)
+        public void SetAspect( float aspect )
         {
             this.m_aspect = aspect;
-            this.Update();
+            this.Update( );
         }
 
-        public void SetFOV(float fov)
+        public void SetFOV( float fov )
         {
             this.m_fov = fov;
-            this.fovDivided = -0.5f/(float) Math.Tan(MathHelper.DegreesToRadians(fov/2));
-            this.Update();
+            this.fovDivided = -0.5f / ( float ) Math.Tan( MathHelper.DegreesToRadians( fov / 2 ) );
+            this.Update( );
         }
 
-        public void SetNearFar(float near, float far)
+        public void SetNearFar( float near, float far )
         {
             this.m_near = near;
             this.m_far = far;
-            this.Update();
+            this.Update( );
         }
 
-        private void Update()
+        private void Update( )
         {
-            Projection = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(m_fov), m_aspect, m_near,
-                m_far);
+            Projection = Matrix4.CreatePerspectiveFieldOfView( MathHelper.DegreesToRadians( m_fov ), m_aspect, m_near,
+                m_far );
         }
 
-        public Ray GetRayFromPixel(float X, float Y)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="x">The X-coordinate on the screen.</param>
+        /// <param name="y">The Y-coordinate on the screen.</param>
+        /// <param name="width">The width of the screen.</param>
+        /// <param name="height">The height of the screen.</param>
+        /// <returns></returns>
+        public Ray GetRayFromPixel( float x, float y, int width, int height )
         {
-            Vector3 dir = this.Transform.Forward*fovDivided +
-                          this.Transform.Right*(X/this.RenderTarget.Width - 0.5f)*
+            Vector3 dir = this.Transform.Forward * fovDivided +
+                          this.Transform.Right * ( x / width - 0.5f ) *
                           this.m_aspect -
-                          this.Transform.Up*(Y/this.RenderTarget.Height - 0.5f);
+                          this.Transform.Up * ( y / height - 0.5f );
 
-            return new Ray(this.Transform.Position, dir);
+            return new Ray( this.Transform.Position, dir );
         }
 
-        public void BindForRendering()
+        public void BindForRendering( )
         {
-            RenderTarget.Bind();
+            RenderTarget.Bind( );
         }
     }
 }
