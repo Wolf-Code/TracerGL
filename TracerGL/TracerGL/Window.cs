@@ -42,7 +42,8 @@ namespace TracerGL
                 Transform =
                 {
                     Position = new Vector3( -5, 0, 0 ),
-                    Rotation = new Angle( 30, 30, 10 )
+                    Rotation = new Angle( 30, 30, 10 ),
+                    Parent = mdl2.Transform
                 }
             };
 

@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using OpenTK.Graphics.OpenGL;
+using TracerRenderer.CollisionObjects;
 using TracerRenderer.Data;
 
 namespace TracerRenderer
 {
     public class Model
     {
+        public List<CollisionObject> Triangles { get; } = new List<CollisionObject>( );
+
         private readonly int vertexBuffer;
         private readonly int indicesBuffer;
         private readonly int elementCount;
@@ -40,6 +43,22 @@ namespace TracerRenderer
 
             elementCount = indexArray.Length;
             Shader = Shader.Default;
+
+            foreach ( Face f in faces )
+            {
+                for ( int x = 0; x < f.Vertices.Length - 2; x++ )
+                {
+                    Triangle t = new Triangle
+                    {
+                        V1 = vertices[ f.Vertices[ x ] ],
+                        V2 = vertices[ f.Vertices[ x + 1 ] ],
+                        V3 = vertices[ f.Vertices[ x + 2 ] ],
+                        Transform = { Parent = Transform }
+                    };
+
+                    Triangles.Add( t );
+                }
+            }
         }
 
         public void Render( )

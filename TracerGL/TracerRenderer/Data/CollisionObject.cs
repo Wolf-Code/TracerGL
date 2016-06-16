@@ -8,5 +8,7 @@
         {
             this.Transform = new Transform();
         }
+
+        public abstract HitResult Intersect( Ray ray );
     }
 }

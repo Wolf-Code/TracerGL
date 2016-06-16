@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
@@ -50,18 +51,33 @@ namespace TracerRenderer.Renderers
         public override void Render( Camera cam, World world )
         {
             CheckBufferSize( Width, Height );
-            for ( int x = 0; x < img.Length; x++ )
-                img[ x ] = 127;
 
-            for( int x = 0; x < Width; x++ )
-                for ( int y = 0; y < Height; y++ )
-                {
-                    Ray ray = cam.GetRayFromPixel( x, y, Width, Height );
-                    
-                    SetColor( x, y, new Color4( Math.Abs( ray.Direction.X ), Math.Abs( ray.Direction.Y ), Math.Abs( ray.Direction.Z ), 1 ) );
-                }
+            Parallel.For( 0, Width * Height, index =>
+            {
+                int x = index % Width;
+                int y = index / Width;
+                Ray ray = cam.GetRayFromPixel( x, y, Width, Height );
+
+                SetColor( x, y, Trace( ray, world ) );
+            } );
 
             RenderBufferToTexture( );
+        }
+
+        public Color4 Trace( Ray ray, World world )
+        {
+            HitResult closest = new HitResult( );
+            foreach ( Model mdl in world.Models )
+            {
+                foreach ( CollisionObject obj in mdl.Triangles )
+                {
+                    HitResult check = obj.Intersect( ray );
+                    if ( !closest.Hit || check.Hit && check.Distance < closest.Distance )
+                        closest = check;
+                }
+            }
+
+            return new Color4( closest.Position.X, closest.Position.Y, closest.Position.Z, 1 );
         }
 
         private void RenderBufferToTexture( )
