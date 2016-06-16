@@ -53,6 +53,7 @@ namespace TracerRenderer.Renderers
             CheckBufferSize( Width, Height );
 
             Parallel.For( 0, Width * Height, index =>
+            //for( int index = 0; index < Width*Height; index++)
             {
                 int x = index % Width;
                 int y = index / Width;
@@ -83,6 +84,7 @@ namespace TracerRenderer.Renderers
         private void RenderBufferToTexture( )
         {
             GL.BindTexture( TextureTarget.Texture2D, texture );
+            GL.Clear( ClearBufferMask.ColorBufferBit );
             GL.TexImage2D( TextureTarget.Texture2D, 0, PixelInternalFormat.Rgb, Width, Height, 0, PixelFormat.Bgr,
     PixelType.Byte, img );
 

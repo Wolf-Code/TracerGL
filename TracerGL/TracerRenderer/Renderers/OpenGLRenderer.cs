@@ -12,7 +12,7 @@ namespace TracerRenderer.Renderers
             foreach ( Model mdl in world.Models )
             {
                 mdl.Shader.Use( );
-                mdl.Shader.SetMatrix( "MVP", mdl.Transform.GetMatrix( ) * VP );
+                mdl.Shader.SetMatrix( "MVP", mdl.Transform.GetMatrix(  ) * VP );
                 mdl.Render( );
             }
         }

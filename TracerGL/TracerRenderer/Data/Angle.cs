@@ -27,7 +27,7 @@ namespace TracerRenderer.Data
                 Quaternion rollRotation = Quaternion.FromAxisAngle( Vector3.UnitZ, MathHelper.DegreesToRadians( Roll ) );
 
                 Quaternion rotation = pitchRotation * yawRotation * rollRotation;
-                return rotation.Inverted(  );
+                return rotation;
             }
         }
 

@@ -53,7 +53,8 @@ namespace TracerRenderer
                         V1 = vertices[ f.Vertices[ x ] ],
                         V2 = vertices[ f.Vertices[ x + 1 ] ],
                         V3 = vertices[ f.Vertices[ x + 2 ] ],
-                        Transform = { Parent = Transform }
+                        Transform = { Parent = Transform },
+                        Model = this
                     };
 
                     Triangles.Add( t );

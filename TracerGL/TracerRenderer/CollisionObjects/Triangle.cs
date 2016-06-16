@@ -15,9 +15,14 @@ namespace TracerRenderer.CollisionObjects
         public override HitResult Intersect( Ray ray )
         {
             HitResult Res = new HitResult { Hit = false };
+            Matrix4 mtx = Transform.GetMatrix( );
 
-            Vector3 e1 = V2.Position - V1.Position;
-            Vector3 e2 = V3.Position - V1.Position;
+            Vector3 v1 = Vector3.Transform( V1.Position, mtx );
+            Vector3 v2 = Vector3.Transform( V2.Position, mtx );
+            Vector3 v3 = Vector3.Transform( V3.Position, mtx );
+
+            Vector3 e1 = v2 - v1;
+            Vector3 e2 = v3 - v1;
             Vector3 q = Vector3.Cross( ray.Direction, e2 );
             float a = Vector3.Dot( e1, q );
             //if(a < 0) return false; // Backface cull
