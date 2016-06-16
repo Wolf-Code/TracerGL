@@ -8,7 +8,7 @@ namespace TracerRenderer
 {
     public class Model
     {
-        public List<CollisionObject> Triangles { get; } = new List<CollisionObject>( );
+        public List<CollisionObject> CollisionObjects { get; } = new List<CollisionObject>( );
 
         private readonly int vertexBuffer;
         private readonly int indicesBuffer;
@@ -57,7 +57,7 @@ namespace TracerRenderer
                         Model = this
                     };
 
-                    Triangles.Add( t );
+                    CollisionObjects.Add( t );
                 }
             }
         }

@@ -53,6 +53,7 @@
     <Compile Include="Data\RenderTarget.cs" />
     <Compile Include="Data\Transform.cs" />
     <Compile Include="Data\World.cs" />
+    <Compile Include="ModelBuilder.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

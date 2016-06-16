@@ -29,7 +29,7 @@ namespace TracerRenderer.CollisionObjects
             if ( a > -epsilon && a < epsilon ) return Res;
 
             float f = 1.0f / a;
-            Vector3 s = ray.Start - V1.Position;
+            Vector3 s = ray.Start - v1;
             float u = f * Vector3.Dot( s, q );
             if ( u < 0.0 || u > 1.0 ) return Res;
             

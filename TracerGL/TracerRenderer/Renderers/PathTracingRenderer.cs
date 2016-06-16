@@ -70,7 +70,7 @@ namespace TracerRenderer.Renderers
             HitResult closest = new HitResult( );
             foreach ( Model mdl in world.Models )
             {
-                foreach ( CollisionObject obj in mdl.Triangles )
+                foreach ( CollisionObject obj in mdl.CollisionObjects )
                 {
                     HitResult check = obj.Intersect( ray );
                     if ( !closest.Hit || check.Hit && check.Distance < closest.Distance )
