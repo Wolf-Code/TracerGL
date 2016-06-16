@@ -45,7 +45,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Camera.cs" />
+    <Compile Include="CollisionObjects\Triangle.cs" />
     <Compile Include="Data\Angle.cs" />
+    <Compile Include="Data\CollisionObject.cs" />
+    <Compile Include="Data\Ray.cs" />
     <Compile Include="Data\RenderTarget.cs" />
     <Compile Include="Data\Transform.cs" />
     <Compile Include="Data\World.cs" />
