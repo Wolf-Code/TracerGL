@@ -18,7 +18,11 @@ namespace TracerRenderer.Data
             if ( Parent != null )
                 pMatrix = Parent.GetMatrix( );
 
-            return Rotation.Matrix * Matrix4.CreateTranslation( Position ) * pMatrix;
+            Vector3 axis;
+            float ang;
+            
+            this.Rotation.GetRotation( out axis, out ang );
+            return Matrix4.CreateFromAxisAngle( axis, ang ) * Matrix4.CreateTranslation( Position ) * pMatrix;
         }
 
         public Angle Rotation { set; get; }

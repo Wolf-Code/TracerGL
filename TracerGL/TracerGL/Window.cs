@@ -84,7 +84,7 @@ namespace TracerGL
 
             cam = new Camera( Width, Height )
             {
-                Transform = new Transform( new Vector3( 0, 0, -10 ) )
+                Transform = new Transform( new Vector3( 0, 0, 10 ) )
             };
 
             Mouse.Move += ( sender, args ) =>
@@ -92,7 +92,7 @@ namespace TracerGL
                 if ( !Mouse[ MouseButton.Left ] ) return;
 
                 //cam.Transform.Rotation.Yaw += args.XDelta * 0.2f;
-                cam.Transform.Rotation.AddRotation( args.YDelta * 0.2f, args.XDelta * 0.2f );
+                cam.Transform.Rotation.AddRotation( -args.YDelta * 0.2f, -args.XDelta * 0.2f );
                 //cam.Transform.Rotation.Pitch -= args.YDelta * 0.2f;
             };
 
@@ -153,10 +153,10 @@ namespace TracerGL
                 cam.Transform.Position -= cam.Transform.Forward * ( float ) e.Time * 10;
 
             if ( Keyboard[ Key.A ] )
-                cam.Transform.Position += cam.Transform.Right * ( float ) e.Time * 10;
+                cam.Transform.Position -= cam.Transform.Right * ( float ) e.Time * 10;
 
             if ( Keyboard[ Key.D ] )
-                cam.Transform.Position -= cam.Transform.Right * ( float ) e.Time * 10;
+                cam.Transform.Position += cam.Transform.Right * ( float ) e.Time * 10;
 
             //mdl2.Transform.Rotation.Roll += (float)e.Time * 25;
             mdl2.Transform.Rotation.AddRotation( 0, 0, ( float ) e.Time * 25 );

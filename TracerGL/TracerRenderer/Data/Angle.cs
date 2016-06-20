@@ -16,7 +16,7 @@ namespace TracerRenderer.Data
 
         public Vector3 Up { private set; get; }
 
-        public Matrix4 Matrix { private set; get; }
+        public Quaternion Rotation { private set; get; }
 
         public Angle( float pitch = 0, float yaw = 0, float roll = 0 )
         {
@@ -24,7 +24,7 @@ namespace TracerRenderer.Data
             this.Yaw = yaw;
             this.Roll = roll;
 
-            this.UpdateMatrix( );
+            this.UpdateRotation( );
         }
 
         public void AddRotation( float pitch = 0, float yaw = 0, float roll = 0 )
@@ -38,18 +38,23 @@ namespace TracerRenderer.Data
             this.Yaw = yaw;
             this.Roll = roll;
 
-            this.UpdateMatrix( );
+            this.UpdateRotation( );
         }
 
-        private void UpdateMatrix( )
+        private void UpdateRotation( )
         {
-            this.Matrix = Matrix4.CreateRotationX( MathHelper.DegreesToRadians( Pitch ) ) *
-                          Matrix4.CreateRotationY( MathHelper.DegreesToRadians( Yaw ) ) *
-                          Matrix4.CreateRotationZ( MathHelper.DegreesToRadians( Roll ) );
+            this.Rotation = Quaternion.FromAxisAngle( Vector3.UnitX, MathHelper.DegreesToRadians( this.Pitch ) ) *
+                            Quaternion.FromAxisAngle( Vector3.UnitY, MathHelper.DegreesToRadians( this.Yaw ) ) *
+                            Quaternion.FromAxisAngle( Vector3.UnitZ, MathHelper.DegreesToRadians( this.Roll ) );
 
-            Forward = this.Matrix.Column2.Xyz.Normalized( );
-            Right = this.Matrix.Column0.Xyz.Normalized( );
-            Up = this.Matrix.Column1.Xyz.Normalized( );
+            Right = Vector3.Transform( Vector3.UnitX, this.Rotation );
+            Up = Vector3.Transform( Vector3.UnitY, this.Rotation );
+            Forward = Vector3.Transform( -Vector3.UnitZ, this.Rotation );
+        }
+
+        public void GetRotation( out Vector3 axis, out float angle )
+        {
+            this.Rotation.ToAxisAngle( out axis, out angle );
         }
 
         public override string ToString( )

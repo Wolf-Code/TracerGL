@@ -65,7 +65,7 @@ namespace TracerRenderer
         public Ray GetRayFromPixel( float x, float y, int width, int height )
         {
             Vector3 dir = -this.Transform.Forward * fovDivided +
-                          -this.Transform.Right * ( x / width - 0.5f ) *
+                          this.Transform.Right * ( x / width - 0.5f ) *
                           this.m_aspect -
                           -this.Transform.Up * ( y / height - 0.5f );
             dir = dir.Normalized( );
