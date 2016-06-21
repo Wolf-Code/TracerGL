@@ -4,19 +4,25 @@ namespace TracerRenderer.Data
 {
     public class Transform
     {
+        public Transform Parent { set; get; }
         public Vector3 Position { set; get; }
 
-        public Vector3 Forward => Vector3.Transform( Vector3.UnitZ, Rotation.Quaternion );
-        public Vector3 Right => Vector3.Transform( -Vector3.UnitX, Rotation.Quaternion );
-        public Vector3 Up => Vector3.Transform( Vector3.UnitY, Rotation.Quaternion );
+        public Vector3 Forward => Rotation.Forward;
+        public Vector3 Right => Rotation.Right;
+        public Vector3 Up => Rotation.Up;
 
         public Matrix4 GetMatrix( )
         {
+            Matrix4 pMatrix = Matrix4.Identity;
+
+            if ( Parent != null )
+                pMatrix = Parent.GetMatrix( );
+
             Vector3 axis;
             float ang;
-            Rotation.Quaternion.ToAxisAngle( out axis, out ang );
-
-            return Matrix4.CreateFromAxisAngle( axis, ang ) * Matrix4.CreateTranslation( Position ) * Matrix4.CreateScale( -1, 1, 1 );
+            
+            this.Rotation.GetRotation( out axis, out ang );
+            return Matrix4.CreateFromAxisAngle( axis, ang ) * Matrix4.CreateTranslation( Position ) * pMatrix;
         }
 
         public Angle Rotation { set; get; }

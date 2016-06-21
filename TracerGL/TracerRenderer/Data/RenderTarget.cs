@@ -11,13 +11,13 @@ namespace TracerRenderer.Data
 
         public int DepthTexture { private set; get; }
 
-        private readonly int width;
-        private readonly int height;
+        public int Width { private set; get; }
+        public int Height { private set; get; }
 
         public RenderTarget( int width, int height )
         {
-            this.width = width;
-            this.height = height;
+            this.Width = width;
+            this.Height = height;
 
             int colorTexture, depthBuffer;
             CreateNullTexture( out colorTexture );
@@ -108,7 +108,7 @@ namespace TracerRenderer.Data
             GL.TexParameter( TextureTarget.Texture2D, TextureParameterName.TextureWrapT, ( int )TextureWrapMode.Clamp );
 
             // generate null texture
-            GL.TexImage2D( TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, width, height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, IntPtr.Zero );
+            GL.TexImage2D( TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, Width, Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, IntPtr.Zero );
 
             GL.BindTexture( TextureTarget.Texture2D, 0 );
         }
@@ -117,7 +117,7 @@ namespace TracerRenderer.Data
         {
             GL.Ext.GenRenderbuffers( 1, out buffer );
             GL.Ext.BindRenderbuffer( RenderbufferTarget.RenderbufferExt, buffer );
-            GL.Ext.RenderbufferStorage( RenderbufferTarget.RenderbufferExt, ( RenderbufferStorage )All.DepthComponent32, width, height );
+            GL.Ext.RenderbufferStorage( RenderbufferTarget.RenderbufferExt, ( RenderbufferStorage )All.DepthComponent32, Width, Height );
         }
 
         public void Bind( )
