@@ -19,7 +19,7 @@ namespace TracerRenderer
 
         public Transform Transform { private set; get; }
 
-        public Model( Vertex[ ] vertices, Face[ ] faces )
+        public Model( Vertex[ ] vertices, Face[ ] faces, bool createTrianglesCollisionObject = true )
         {
             Transform = new Transform( );
 
@@ -31,35 +31,64 @@ namespace TracerRenderer
 
             vertexBuffer = GL.GenBuffer( );
             GL.BindBuffer( BufferTarget.ArrayBuffer, vertexBuffer );
-            GL.BufferData( BufferTarget.ArrayBuffer, new IntPtr( Vertex.SizeInBytes * vertices.Length ), vertices,
-                BufferUsageHint.StaticDraw );
+            GL.BufferData( BufferTarget.ArrayBuffer, new IntPtr( Vertex.SizeInBytes * vertices.Length ), vertices, BufferUsageHint.StaticDraw );
             GL.BindBuffer( BufferTarget.ArrayBuffer, 0 );
 
             indicesBuffer = GL.GenBuffer( );
             GL.BindBuffer( BufferTarget.ElementArrayBuffer, indicesBuffer );
-            GL.BufferData( BufferTarget.ElementArrayBuffer, new IntPtr( sizeof ( uint ) * indexArray.Length ),
-                indexArray, BufferUsageHint.StaticDraw );
+            GL.BufferData( BufferTarget.ElementArrayBuffer, new IntPtr( sizeof ( uint ) * indexArray.Length ), indexArray, BufferUsageHint.StaticDraw );
             GL.BindBuffer( BufferTarget.ElementArrayBuffer, 0 );
 
             elementCount = indexArray.Length;
             Shader = Shader.Default;
 
-            foreach ( Face f in faces )
+            if ( createTrianglesCollisionObject )
             {
-                for ( int x = 0; x < f.Vertices.Length - 2; x++ )
+                foreach ( Face f in faces )
                 {
-                    Triangle t = new Triangle
+                    for ( int x = 0; x < f.Vertices.Length - 2; x++ )
                     {
-                        V1 = vertices[ f.Vertices[ x ] ],
-                        V2 = vertices[ f.Vertices[ x + 1 ] ],
-                        V3 = vertices[ f.Vertices[ x + 2 ] ],
-                        Transform = { Parent = Transform },
-                        Model = this
-                    };
+                        Triangle t = new Triangle
+                        {
+                            V1 = vertices[ f.Vertices[ x ] ],
+                            V2 = vertices[ f.Vertices[ x + 1 ] ],
+                            V3 = vertices[ f.Vertices[ x + 2 ] ]
+                        };
 
-                    CollisionObjects.Add( t );
+                        t.SetParent( this );
+
+                        CollisionObjects.Add( t );
+                    }
                 }
             }
+        }
+
+        public Model( Vertex[ ] vertices, uint[ ] indexArray )
+        {
+            Transform = new Transform( );
+
+            vertexBuffer = GL.GenBuffer( );
+            GL.BindBuffer( BufferTarget.ArrayBuffer, vertexBuffer );
+            GL.BufferData( BufferTarget.ArrayBuffer, new IntPtr( Vertex.SizeInBytes * vertices.Length ), vertices, BufferUsageHint.StaticDraw );
+            GL.BindBuffer( BufferTarget.ArrayBuffer, 0 );
+
+            indicesBuffer = GL.GenBuffer( );
+            GL.BindBuffer( BufferTarget.ElementArrayBuffer, indicesBuffer );
+            GL.BufferData( BufferTarget.ElementArrayBuffer, new IntPtr( sizeof( uint ) * indexArray.Length ), indexArray, BufferUsageHint.StaticDraw );
+            GL.BindBuffer( BufferTarget.ElementArrayBuffer, 0 );
+
+            elementCount = indexArray.Length;
+            Shader = Shader.Default;
+        }
+
+        /// <summary>
+        /// Adds a collision object to the model.
+        /// </summary>
+        /// <param name="obj">The object to add.</param>
+        public void AddCollisionObject( CollisionObject obj )
+        {
+            obj.SetParent( this );
+            CollisionObjects.Add( obj );
         }
 
         public void Render( )
@@ -73,14 +102,12 @@ namespace TracerRenderer
                 GL.BindBuffer( BufferTarget.ArrayBuffer, vertexBuffer );
 
                 GL.VertexAttribPointer( 2, 2, VertexAttribPointerType.Float, false, Vertex.SizeInBytes, IntPtr.Zero );
-                GL.VertexAttribPointer( 1, 2, VertexAttribPointerType.Float, false, Vertex.SizeInBytes,
-                    ( IntPtr ) ( 2 * sizeof ( float ) ) );
-                GL.VertexAttribPointer( 0, 3, VertexAttribPointerType.Float, false, Vertex.SizeInBytes,
-                    ( IntPtr ) ( 5 * sizeof ( float ) ) );
+                GL.VertexAttribPointer( 1, 2, VertexAttribPointerType.Float, false, Vertex.SizeInBytes, ( IntPtr ) ( 2 * sizeof ( float ) ) );
+                GL.VertexAttribPointer( 0, 3, VertexAttribPointerType.Float, false, Vertex.SizeInBytes, ( IntPtr ) ( 5 * sizeof ( float ) ) );
 
-                Shader.BindAttributeLocation( "position", 0 );
-                Shader.BindAttributeLocation( "normal", 1 );
                 Shader.BindAttributeLocation( "texcoords", 2 );
+                Shader.BindAttributeLocation( "normal", 1 );
+                Shader.BindAttributeLocation( "position", 0 );
 
                 // Index Array Buffer
                 GL.BindBuffer( BufferTarget.ElementArrayBuffer, indicesBuffer );

@@ -80,6 +80,10 @@ namespace TracerGL
             world.AddModel( mdl2 );
             world.AddModel( mdl3 );
             world.AddModel( floor );
+
+            Model sphere = Util.CreateSphere( 1.5f, 32, 32 );
+            world.AddModel( sphere );
+
             GL.ClearColor( Color4.CornflowerBlue );
 
             cam = new Camera( Width, Height )
@@ -178,11 +182,6 @@ namespace TracerGL
             cam.BindForRendering( );
             {
                 GL.Clear( ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit );
-                //GL.Begin( BeginMode.CollisionObjects );
-                //GL.Vertex3( new Vector3( -0.3f, -1, 0 ) );
-                //GL.Vertex3( new Vector3( 1, -1, 0 ) );
-                //GL.Vertex3( new Vector3( 0, 1, 0 ) );
-                //GL.End( );
                 renderer.Render( cam, world );
             }
             // And we want to stop rendering to the framebuffer.

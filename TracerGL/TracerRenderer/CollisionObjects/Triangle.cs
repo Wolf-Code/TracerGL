@@ -1,17 +1,35 @@
-﻿using System;
-using OpenTK;
+﻿using OpenTK;
 using TracerRenderer.Data;
 
 namespace TracerRenderer.CollisionObjects
 {
+    /// <summary>
+    /// A triangle.
+    /// </summary>
     public class Triangle : CollisionObject
     {
         const float epsilon = 0.0001f;
-        public Model Model { set; get; }
+
+        /// <summary>
+        /// The first vertex of the triangle.
+        /// </summary>
         public Vertex V1 { set; get; }
+
+        /// <summary>
+        /// The second vertex of the triangle.
+        /// </summary>
         public Vertex V2 { set; get; }
+
+        /// <summary>
+        /// The third vertex of the triangle.
+        /// </summary>
         public Vertex V3 { set; get; }
 
+        /// <summary>
+        /// Checks for intersection between this <see cref="Triangle"/> and a <see cref="Ray"/>.
+        /// </summary>
+        /// <param name="ray">The <see cref="Ray"/> to check with for intersection.</param>
+        /// <returns>A <see cref="HitResult"/> containing all information about the test.</returns>
         public override HitResult Intersect( Ray ray )
         {
             HitResult Res = new HitResult { Hit = false };
