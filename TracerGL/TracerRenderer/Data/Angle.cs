@@ -43,9 +43,10 @@ namespace TracerRenderer.Data
 
         private void UpdateRotation( )
         {
-            this.Rotation = Quaternion.FromAxisAngle( Vector3.UnitX, MathHelper.DegreesToRadians( this.Pitch ) ) *
-                            Quaternion.FromAxisAngle( Vector3.UnitY, MathHelper.DegreesToRadians( this.Yaw ) ) *
-                            Quaternion.FromAxisAngle( Vector3.UnitZ, MathHelper.DegreesToRadians( this.Roll ) );
+            Quaternion qP = Quaternion.FromAxisAngle( Vector3.UnitX, MathHelper.DegreesToRadians( this.Pitch ) );
+            Quaternion qY = Quaternion.FromAxisAngle( Vector3.UnitY, MathHelper.DegreesToRadians( this.Yaw ) );
+            Quaternion qR = Quaternion.FromAxisAngle( Vector3.UnitZ, MathHelper.DegreesToRadians( this.Roll ) );
+            this.Rotation = qR * qY * qP;
 
             Right = Vector3.Transform( Vector3.UnitX, this.Rotation );
             Up = Vector3.Transform( Vector3.UnitY, this.Rotation );

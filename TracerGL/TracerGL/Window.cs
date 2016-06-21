@@ -92,7 +92,7 @@ namespace TracerGL
                 if ( !Mouse[ MouseButton.Left ] ) return;
 
                 //cam.Transform.Rotation.Yaw += args.XDelta * 0.2f;
-                cam.Transform.Rotation.AddRotation( -args.YDelta * 0.2f, -args.XDelta * 0.2f );
+                cam.Transform.Rotation.AddRotation( -args.YDelta * 0.2f, -args.XDelta * 0.2f, 0 );
                 //cam.Transform.Rotation.Pitch -= args.YDelta * 0.2f;
             };
 
