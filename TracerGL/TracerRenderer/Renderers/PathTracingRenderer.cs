@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Net.WebSockets;
 using System.Threading.Tasks;
 using OpenTK;
 using OpenTK.Graphics;
@@ -24,12 +26,16 @@ namespace TracerRenderer.Renderers
         /// </summary>
         public int Height { set; get; }
 
+        public int MaxDepth { set; get; }
+
         private readonly Shader shader;
         private readonly Model quad;
         private readonly int texture;
 
         public PathTracingRenderer( int width, int height )
         {
+            MaxDepth = 3;
+
             shader = new Shader( );
             shader.AddShader( File.ReadAllText( "Shaders/texturedQuad.frag" ), ShaderType.FragmentShader );
             shader.AddShader( File.ReadAllText( "Shaders/texturedQuad.vert" ), ShaderType.VertexShader );
@@ -54,21 +60,25 @@ namespace TracerRenderer.Renderers
         private void SetColor( int x, int y, Color4 color )
         {
             int id = ( y * Width + x ) * 3;
-            img[ id ] = ( byte )( color.R * 255f );
-            img[ id + 1 ] = ( byte )( color.G * 255f );
-            img[ id + 2 ] = ( byte )( color.B * 255f );
+            img[ id ] = ( byte ) ( Math.Min( 1f, color.R ) * 255f );
+            img[ id + 1 ] = ( byte ) ( Math.Min( 1f, color.G ) * 255f );
+            img[ id + 2 ] = ( byte ) ( Math.Min( 1f, color.B ) * 255f );
         }
 
         public override void Render( Camera cam, World world )
         {
             CheckBufferSize( Width, Height );
 
+            List<CollisionObject> lights = new List<CollisionObject>( );
             List<CollisionObject> colliders = new List<CollisionObject>( );
 
             foreach( Model mdl in world.Models )
                 foreach ( Mesh msh in mdl.Meshes )
+                {
                     colliders.AddRange( msh.Colliders );
-
+                    if ( msh.Material.Emission.ToArgb( ) > 0 )
+                        lights.AddRange( msh.Colliders );
+                }
             Parallel.For( 0, Width * Height, index =>
             //for( int index = 0; index < Width*Height; index++)
             {
@@ -76,13 +86,13 @@ namespace TracerRenderer.Renderers
                 int y = index / Width;
                 Ray ray = cam.GetRayFromPixel( x, y, Width, Height );
 
-                SetColor( x, y, Trace( ray, colliders ) );
+                SetColor( x, y, Trace( ray, colliders, lights ) );
             } );
 
             RenderBufferToTexture( );
         }
 
-        public Color4 Trace( Ray ray, List<CollisionObject> colliders )
+        private HitResult GetIntersection( Ray ray, List<CollisionObject> colliders )
         {
             HitResult closest = new HitResult( );
             foreach ( CollisionObject obj in colliders )
@@ -92,10 +102,39 @@ namespace TracerRenderer.Renderers
                     closest = check;
             }
 
-            if ( !closest.Hit )
+            return closest;
+        }
+
+        private Color4 Radiance( HitResult result )
+        {
+            if ( !result.Hit )
                 return Color4.Black;
 
-            return closest.Mesh.Material.Diffuse;
+            return result.Mesh.Material.Diffuse;
+        }
+
+        public Color4 Trace( Ray ray, List<CollisionObject> colliders, List<CollisionObject> lights )
+        {
+            HitResult closest = GetIntersection( ray, colliders );
+
+            Color4 col = Color4.Black;
+            for ( int x = 0; x < MaxDepth; x++ )
+            {
+                Color4 rad = Radiance( closest );
+                col.R += rad.R;
+                col.G += rad.G;
+                col.B += rad.B;
+                col.A += rad.A;
+
+                if ( !closest.Hit )
+                    break;
+
+                ray = new Ray( closest.Position + closest.Normal * float.Epsilon,
+                    PathTraceUtil.Reflect( ray.Direction, closest.Normal ) );
+                closest = GetIntersection( ray, colliders );
+            }
+
+            return col;
         }
 
         private void RenderBufferToTexture( )

@@ -4,8 +4,14 @@ using TracerRenderer.Data;
 
 namespace TracerRenderer.CollisionObjects
 {
-    class Sphere : CollisionObject
+    /// <summary>
+    /// A sphere collider.
+    /// </summary>
+    public class Sphere : CollisionObject
     {
+        /// <summary>
+        /// The radius of the sphere.
+        /// </summary>
         public float Radius { set; get; }
 
         public Sphere( float radius )
@@ -51,8 +57,6 @@ namespace TracerRenderer.CollisionObjects
             res.Position = ray.Start + ray.Direction * res.Distance;
             res.Normal = ( res.Position - this.Transform.Position ).Normalized( );
             res.Mesh = this.Mesh;
-            if( this.Mesh == null )
-                throw new Exception();
 
             return res;
         }

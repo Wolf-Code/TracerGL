@@ -29,6 +29,7 @@ namespace TracerGL
 
             Vertex[ ] vertices = { v1, v2, v3 };
             Face[ ] faces = { new Face { Vertices = new uint[ ] { 0, 1, 2 } } };
+
             mdl = new Model( );
             Mesh mdlMesh = new Mesh( mdl );
             mdlMesh.SetTrianglesWithCollider( vertices, faces );
@@ -36,16 +37,16 @@ namespace TracerGL
             mdl2 = new Model( );
             Mesh mdlMesh2 = new Mesh( mdl2 );
             mdlMesh2.SetTrianglesWithCollider( vertices, faces );
-            mdl2.Transform.Position=new Vector3(1,0,0);
+            mdl2.Transform.Position = new Vector3( 1, 0, 0 );
 
             mdl3 = new Model( );
             Mesh mdlMesh3 = new Mesh( mdl3 );
             mdlMesh3.SetTrianglesWithCollider( vertices, faces );
             mdl3.Transform.Position = new Vector3( -5, 0, 0 );
-            mdl3.Transform.Rotation=new Angle( 30,30,10 );
+            mdl3.Transform.Rotation = new Angle( 30, 30, 10 );
             mdl3.Transform.Parent = mdl2.Transform;
 
-            ModelBuilder floorBuilder = new ModelBuilder(  );
+            ModelBuilder floorBuilder = new ModelBuilder( );
             floorBuilder.AddVertex( new Vertex
             {
                 Position = new Vector3( -100, 0, -100 ),
@@ -73,7 +74,7 @@ namespace TracerGL
             floorBuilder.AddFace( new Face { Vertices = new uint[ ] { 0, 1, 2 } } );
             floorBuilder.AddFace( new Face { Vertices = new uint[ ] { 2, 3, 0 } } );
             floor = floorBuilder.GetModel( );
-            floor.Meshes.First().Material.Diffuse = Color4.Gray;
+            floor.Meshes.First( ).Material.Diffuse = Color4.Gray;
 
             world = new World( );
             world.AddModel( mdl );
@@ -190,8 +191,7 @@ namespace TracerGL
             }
             // And we want to stop rendering to the framebuffer.
             cam.RenderTarget.Unbind( );
-
-
+            
             // Render the fullscreen quad containing the framebuffer's texture.
             DrawFullscreenQuad( );
 
