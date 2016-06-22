@@ -68,7 +68,7 @@ namespace TracerRenderer.CollisionObjects
                 Res.Normal = Res.Normal * -1;
 
             Res.Hit = true;
-            Res.Model = Model;
+            Res.Mesh = this.Mesh;
 
             return Res;
         }

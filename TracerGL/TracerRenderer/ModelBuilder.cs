@@ -20,7 +20,11 @@ namespace TracerRenderer
 
         public Model GetModel( )
         {
-            return new Model( Vertices.ToArray( ), Faces.ToArray( ) );
+            Model mdl = new Model( );
+            Mesh mdlMesh = new Mesh( mdl );
+            mdlMesh.SetTrianglesWithCollider( Vertices.ToArray(  ), Faces.ToArray(  ) );
+
+            return mdl;
         }
     }
 }

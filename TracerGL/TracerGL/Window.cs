@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
@@ -28,23 +29,21 @@ namespace TracerGL
 
             Vertex[ ] vertices = { v1, v2, v3 };
             Face[ ] faces = { new Face { Vertices = new uint[ ] { 0, 1, 2 } } };
-            mdl = new Model( vertices, faces );
-            mdl2 = new Model( vertices, faces )
-            {
-                Transform =
-                {
-                    Position = new Vector3( 1, 0, 0 )
-                }
-            };
-            mdl3 = new Model( vertices, faces )
-            {
-                Transform =
-                {
-                    Position = new Vector3( -5, 0, 0 ),
-                    Rotation = new Angle( 30, 30, 10 ),
-                    Parent = mdl2.Transform
-                }
-            };
+            mdl = new Model( );
+            Mesh mdlMesh = new Mesh( mdl );
+            mdlMesh.SetTrianglesWithCollider( vertices, faces );
+
+            mdl2 = new Model( );
+            Mesh mdlMesh2 = new Mesh( mdl2 );
+            mdlMesh2.SetTrianglesWithCollider( vertices, faces );
+            mdl2.Transform.Position=new Vector3(1,0,0);
+
+            mdl3 = new Model( );
+            Mesh mdlMesh3 = new Mesh( mdl3 );
+            mdlMesh3.SetTrianglesWithCollider( vertices, faces );
+            mdl3.Transform.Position = new Vector3( -5, 0, 0 );
+            mdl3.Transform.Rotation=new Angle( 30,30,10 );
+            mdl3.Transform.Parent = mdl2.Transform;
 
             ModelBuilder floorBuilder = new ModelBuilder(  );
             floorBuilder.AddVertex( new Vertex
@@ -74,6 +73,7 @@ namespace TracerGL
             floorBuilder.AddFace( new Face { Vertices = new uint[ ] { 0, 1, 2 } } );
             floorBuilder.AddFace( new Face { Vertices = new uint[ ] { 2, 3, 0 } } );
             floor = floorBuilder.GetModel( );
+            floor.Meshes.First().Material.Diffuse = Color4.Gray;
 
             world = new World( );
             world.AddModel( mdl );
@@ -83,6 +83,7 @@ namespace TracerGL
 
             Model sphere = Util.CreateSphere( 1.5f, 32, 32 );
             world.AddModel( sphere );
+            sphere.Meshes.First( ).Material.Diffuse = Color4.DarkRed;
 
             GL.ClearColor( Color4.CornflowerBlue );
 
@@ -116,15 +117,18 @@ namespace TracerGL
             textured.AddShader( File.ReadAllText( "Shaders/texturedQuad.vert" ), ShaderType.VertexShader );
             textured.Link( );
 
-            quad = new Model( new[ ]
+            quad = new Model( );
+            Mesh quadMesh = new Mesh( quad );
+            quadMesh.SetTrianglesWithCollider( new[ ]
             {
                 new Vertex { Position = new Vector3( -1, -1, 0 ), TexCoord = new Vector2( 0, 0 ) },
                 new Vertex { Position = new Vector3( -1, 1, 0 ), TexCoord = new Vector2( 0, 1 ) },
                 new Vertex { Position = new Vector3( 1, 1, 0 ), TexCoord = new Vector2( 1, 1 ) },
                 new Vertex { Position = new Vector3( 1, -1, 0 ), TexCoord = new Vector2( 1, 0 ) }
-            }, new[ ] { new Face { Vertices = new uint[ ] { 0, 1, 2, 2, 3, 0 } } } ) { Shader = textured };
+            }, new[ ] { new Face { Vertices = new uint[ ] { 0, 1, 2, 2, 3, 0 } } } );
+            quadMesh.Shader = textured;
 
-            traceRenderer = new PathTracingRenderer( 200, 200 );
+            traceRenderer = new PathTracingRenderer( 128, 128 );
             glRenderer = new OpenGLRenderer( );
 
             renderer = glRenderer;
@@ -144,6 +148,7 @@ namespace TracerGL
             {
                 Transform = new Transform( cam.Transform.Position, cam.Transform.Rotation )
             };
+            cam.SetFOV( 50 );
         }
 
         protected override void OnUpdateFrame( FrameEventArgs e )
@@ -175,8 +180,7 @@ namespace TracerGL
 
             // Enable depth testing so our cube draws correctly
             GL.Enable( EnableCap.DepthTest );
-
-
+            
 
             // We want to render to the framebuffer.
             cam.BindForRendering( );

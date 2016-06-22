@@ -2,8 +2,9 @@
 
 out vec4 color_output;
 in vec2 uv;
+in vec4 vDiffuse;
 
 void main( )
 {
-	color_output = vec4(uv, 0.0, 1.0);
+	color_output = vDiffuse;
 }

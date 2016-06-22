@@ -8,11 +8,6 @@ namespace TracerRenderer.CollisionObjects
     {
         public float Radius { set; get; }
 
-        public Sphere( )
-        {
-            Radius = 1;
-        }
-
         public Sphere( float radius )
         {
             Radius = radius;
@@ -55,7 +50,9 @@ namespace TracerRenderer.CollisionObjects
             res.Hit = true;
             res.Position = ray.Start + ray.Direction * res.Distance;
             res.Normal = ( res.Position - this.Transform.Position ).Normalized( );
-            res.Model = this.Model;
+            res.Mesh = this.Mesh;
+            if( this.Mesh == null )
+                throw new Exception();
 
             return res;
         }

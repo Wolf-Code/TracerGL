@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using OpenTK;
+using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 
 namespace TracerRenderer
@@ -114,6 +115,17 @@ namespace TracerRenderer
             GL.ActiveTexture( TextureUnit.Texture0 + texture );
             GL.BindTexture( TextureTarget.Texture2D, texture );
             GL.Uniform1( GetUniformLocation( samplerName ), texture );
+        }
+
+        /// <summary>
+        /// Sets a vec4 inside the shader to a given color.
+        /// </summary>
+        /// <param name="name">The name of the color in the shader.</param>
+        /// <param name="color">The color.</param>
+        public void SetColor4( string name, Color4 color )
+        {
+            int loc = GetUniformLocation( name );
+            GL.Uniform4( loc, color );
         }
 
         private void CheckIfCurrentShader( )

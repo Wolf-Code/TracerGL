@@ -66,9 +66,11 @@ namespace TracerRenderer
 
             uint[ ] elements = CalculateElements( segments, rings );
 
-            Model m = new Model( data, elements );
+            Model m = new Model( );
+            Mesh sphereMesh = new Mesh( m );
+            sphereMesh.SetTrianglesWithoutCollider( data, elements );
             Sphere sph = new Sphere( radius );
-            m.AddCollisionObject( sph );
+            sph.SetParent( sphereMesh );
 
             return m;
         }

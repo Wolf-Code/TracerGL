@@ -13,24 +13,31 @@
         /// <summary>
         /// The parent model.
         /// </summary>
-        public Model Model { private set; get; }
+        public Mesh Mesh{ private set; get; }
+
+        protected CollisionObject( )
+        {
+            this.Transform = new Transform( );
+        }
 
         /// <summary>
         /// Constructor.
         /// </summary>
-        protected CollisionObject()
+        protected CollisionObject( Mesh mesh ) : this( )
         {
-            this.Transform = new Transform();
+            this.SetParent( mesh );
         }
+
 
         /// <summary>
         /// Sets the parent of the <see cref="CollisionObject"/>.
         /// </summary>
-        /// <param name="mdl">The <see cref="Model"/> to use as parent.</param>
-        public void SetParent( Model mdl )
+        /// <param name="mesh">The <see cref="Mesh"/> to use as parent.</param>
+        public void SetParent( Mesh mesh )
         {
-            this.Model = mdl;
-            this.Transform.Parent = mdl.Transform;
+            mesh.AddCollider( this );
+            this.Mesh = mesh;
+            this.Transform.Parent = mesh.Transform;
         }
 
         /// <summary>
