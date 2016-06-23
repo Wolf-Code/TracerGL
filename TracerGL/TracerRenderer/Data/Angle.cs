@@ -1,4 +1,5 @@
-﻿using OpenTK;
+﻿using System;
+using OpenTK;
 
 namespace TracerRenderer.Data
 {
@@ -17,6 +18,8 @@ namespace TracerRenderer.Data
         public Vector3 Up { private set; get; }
 
         public Quaternion Rotation { private set; get; }
+
+        public event EventHandler OnChange; 
 
         public Angle( float pitch = 0, float yaw = 0, float roll = 0 )
         {
@@ -51,6 +54,8 @@ namespace TracerRenderer.Data
             Right = Vector3.Transform( Vector3.UnitX, this.Rotation );
             Up = Vector3.Transform( Vector3.UnitY, this.Rotation );
             Forward = Vector3.Transform( -Vector3.UnitZ, this.Rotation );
+
+            OnChange?.Invoke( this, EventArgs.Empty );
         }
 
         public void GetRotation( out Vector3 axis, out float angle )
@@ -58,6 +63,13 @@ namespace TracerRenderer.Data
             this.Rotation.ToAxisAngle( out axis, out angle );
         }
 
+        /// <summary>
+        /// Returns a string that represents the current object.
+        /// </summary>
+        /// <returns>
+        /// A string that represents the current object.
+        /// </returns>
+        /// <filterpriority>2</filterpriority>
         public override string ToString( )
         {
             return $"(P: {Pitch}, Y: {Yaw}, R: {Roll})";

@@ -1,11 +1,27 @@
-﻿using OpenTK;
+﻿using System;
+using OpenTK;
 
 namespace TracerRenderer.Data
 {
     public class Transform
     {
+        private Vector3 position;
         public Transform Parent { set; get; }
-        public Vector3 Position { set; get; }
+
+        public Vector3 Position
+        {
+            set
+            {
+                if ( position == value ) return;
+
+                position = value;
+                OnPositionChanged?.Invoke( this, position );
+            }
+            get { return position; }
+        }
+
+        public EventHandler<Vector3> OnPositionChanged;
+        public EventHandler<Angle> OnRotationChanged;  
 
         public Vector3 Forward => Rotation.Forward;
         public Vector3 Right => Rotation.Right;
@@ -30,6 +46,7 @@ namespace TracerRenderer.Data
         public Transform( )
         {
             this.Rotation = new Angle( );
+            this.Rotation.OnChange += ( sender, args ) => this.OnRotationChanged?.Invoke( this, ( Angle ) sender );
             this.Position = new Vector3( );
         }
 

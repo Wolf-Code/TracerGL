@@ -10,11 +10,11 @@ namespace TracerRenderer.Data
         /// <summary>
         /// The material's diffuse colour.
         /// </summary>
-        public Color4 Diffuse { set; get; } = Color4.White;
+        public Color Diffuse { set; get; } = new Color( 1f, 1f, 1f );
 
         /// <summary>
         /// The emission of the material.
         /// </summary>
-        public Color4 Emission { set; get; } = Color4.Black;
+        public Color Emission { set; get; } = new Color( );
     }
 }

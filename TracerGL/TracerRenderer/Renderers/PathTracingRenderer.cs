@@ -16,6 +16,8 @@ namespace TracerRenderer.Renderers
     public class PathTracingRenderer : Renderer
     {
         private byte[ ] img = new byte[ 0 ];
+        private Color[ ] colors = new Color[ 0 ];
+        private int frames;
 
         /// <summary>
         /// The width of the image to be pathtraced.
@@ -34,7 +36,8 @@ namespace TracerRenderer.Renderers
 
         public PathTracingRenderer( int width, int height )
         {
-            MaxDepth = 3;
+            MaxDepth = 10;
+            frames = 0;
 
             shader = new Shader( );
             shader.AddShader( File.ReadAllText( "Shaders/texturedQuad.frag" ), ShaderType.FragmentShader );
@@ -57,12 +60,14 @@ namespace TracerRenderer.Renderers
             Util.CreateNullTexture( width, height, out texture );
         }
 
-        private void SetColor( int x, int y, Color4 color )
+        private void SetColor( int x, int y, Color color )
         {
             int id = ( y * Width + x ) * 3;
-            img[ id ] = ( byte ) ( Math.Min( 1f, color.R ) * 255f );
-            img[ id + 1 ] = ( byte ) ( Math.Min( 1f, color.G ) * 255f );
-            img[ id + 2 ] = ( byte ) ( Math.Min( 1f, color.B ) * 255f );
+            colors[ id / 3 ] += color;
+
+            img[ id ] = ( byte ) ( Math.Min( 1f, colors[ id / 3 ].R / frames ) * 255f );
+            img[ id + 1 ] = ( byte ) ( Math.Min( 1f, colors[ id / 3 ].G / frames ) * 255f );
+            img[ id + 2 ] = ( byte ) ( Math.Min( 1f, colors[ id / 3 ].B / frames ) * 255f );
         }
 
         public override void Render( Camera cam, World world )
@@ -76,18 +81,21 @@ namespace TracerRenderer.Renderers
                 foreach ( Mesh msh in mdl.Meshes )
                 {
                     colliders.AddRange( msh.Colliders );
-                    if ( msh.Material.Emission.ToArgb( ) > 0 )
+                    if ( msh.Material.Emission.HasValue )
                         lights.AddRange( msh.Colliders );
                 }
+
             Parallel.For( 0, Width * Height, index =>
             //for( int index = 0; index < Width*Height; index++)
             {
                 int x = index % Width;
                 int y = index / Width;
-                Ray ray = cam.GetRayFromPixel( x, y, Width, Height );
+                Ray ray = cam.GetRayFromPixel( x + ThreadRandom.NextNegPosFloat(  ), y + ThreadRandom.NextNegPosFloat(  ), Width, Height );
 
                 SetColor( x, y, Trace( ray, colliders, lights ) );
             } );
+
+            frames++;
 
             RenderBufferToTexture( );
         }
@@ -105,36 +113,38 @@ namespace TracerRenderer.Renderers
             return closest;
         }
 
-        private Color4 Radiance( HitResult result )
+        public Color Environment( Ray ray )
         {
-            if ( !result.Hit )
-                return Color4.Black;
-
-            return result.Mesh.Material.Diffuse;
+            return new Color( );
         }
 
-        public Color4 Trace( Ray ray, List<CollisionObject> colliders, List<CollisionObject> lights )
+        public Color Trace( Ray ray, List<CollisionObject> colliders, List<CollisionObject> lights )
         {
             HitResult closest = GetIntersection( ray, colliders );
 
-            Color4 col = Color4.Black;
+            Color col = new Color(  );
+            Color throughput = new Color( 1, 1, 1 );
+
             for ( int x = 0; x < MaxDepth; x++ )
             {
-                Color4 rad = Radiance( closest );
-                col.R += rad.R;
-                col.G += rad.G;
-                col.B += rad.B;
-                col.A += rad.A;
+                if ( !closest.Hit )
+                {
+                    return col * throughput + Environment( ray ) * throughput;
+                }
+
+                if ( closest.Mesh.Material.Emission.HasValue )
+                    col += closest.Mesh.Material.Emission;
+
+                throughput *= closest.Mesh.Material.Diffuse;
 
                 if ( !closest.Hit )
                     break;
 
-                ray = new Ray( closest.Position + closest.Normal * float.Epsilon,
-                    PathTraceUtil.Reflect( ray.Direction, closest.Normal ) );
+                ray = new Ray( closest.Position + closest.Normal * float.Epsilon, PathTraceUtil.RandomDirectionInSameHemisphere( ray.Direction ) );
                 closest = GetIntersection( ray, colliders );
             }
 
-            return col;
+            return col * throughput;
         }
 
         private void RenderBufferToTexture( )
@@ -152,7 +162,12 @@ namespace TracerRenderer.Renderers
         {
             int pixelCount = width * height;
             if ( img.Length != pixelCount * 3 )
+            {
                 img = new byte[ pixelCount * 3 ];
+                colors = new Color[ pixelCount ];
+                for ( int x = 0; x < colors.Length; x++ )
+                    colors[ x ] = new Color( );
+            }
         }
     }
 }

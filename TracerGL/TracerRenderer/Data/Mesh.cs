@@ -111,7 +111,7 @@ namespace TracerRenderer.Data
                 Shader.BindAttributeLocation( "normal", 1 );
                 Shader.BindAttributeLocation( "position", 0 );
 
-                Shader.SetColor4( "diffuse", this.Material.Diffuse );
+                Shader.SetColor( "diffuse", this.Material.Diffuse );
 
                 // Index Array Buffer
                 GL.BindBuffer( BufferTarget.ElementArrayBuffer, indicesBuffer );

@@ -1,5 +1,6 @@
 ﻿using System;
 using OpenTK;
+using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using TracerRenderer.CollisionObjects;
 using TracerRenderer.Data;

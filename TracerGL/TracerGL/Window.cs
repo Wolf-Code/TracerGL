@@ -23,9 +23,9 @@ namespace TracerGL
 
         protected override void OnLoad( EventArgs e )
         {
-            Vertex v1 = new Vertex { Position = new Vector3( -1f, -1, 0 ), TexCoord = new Vector2( 0, 0 ) };
-            Vertex v2 = new Vertex { Position = new Vector3( 1, -1, 0 ), TexCoord = new Vector2( 1, 0 ) };
-            Vertex v3 = new Vertex { Position = new Vector3( 0, 1, 0 ), TexCoord = new Vector2( 0, 1 ) };
+            Vertex v1 = new Vertex { Position = new Vector3( -1f, -1, 0 ), TexCoord = new Vector2( 0, 0 ), Normal = Vector3.UnitY };
+            Vertex v2 = new Vertex { Position = new Vector3( 1, -1, 0 ), TexCoord = new Vector2( 1, 0 ), Normal = Vector3.UnitY };
+            Vertex v3 = new Vertex { Position = new Vector3( 0, 1, 0 ), TexCoord = new Vector2( 0, 1 ), Normal = Vector3.UnitY };
 
             Vertex[ ] vertices = { v1, v2, v3 };
             Face[ ] faces = { new Face { Vertices = new uint[ ] { 0, 1, 2 } } };
@@ -37,14 +37,14 @@ namespace TracerGL
             mdl2 = new Model( );
             Mesh mdlMesh2 = new Mesh( mdl2 );
             mdlMesh2.SetTrianglesWithCollider( vertices, faces );
-            mdl2.Transform.Position = new Vector3( 1, 0, 0 );
+            mdl2.Transform.Position = new Vector3( 5, 0, 0 );
+            mdl2.Transform.Rotation = new Angle( -45, -30, -20 );
 
             mdl3 = new Model( );
             Mesh mdlMesh3 = new Mesh( mdl3 );
             mdlMesh3.SetTrianglesWithCollider( vertices, faces );
-            mdl3.Transform.Position = new Vector3( -5, 0, 0 );
-            mdl3.Transform.Rotation = new Angle( 30, 30, 10 );
-            mdl3.Transform.Parent = mdl2.Transform;
+            mdl3.Transform.Position = new Vector3( 0, 0, 2.5f );
+            mdl3.Meshes.First().Material.Diffuse = new Color( 0.4f,0.8f,0.3f );
 
             ModelBuilder floorBuilder = new ModelBuilder( );
             floorBuilder.AddVertex( new Vertex
@@ -74,7 +74,7 @@ namespace TracerGL
             floorBuilder.AddFace( new Face { Vertices = new uint[ ] { 0, 1, 2 } } );
             floorBuilder.AddFace( new Face { Vertices = new uint[ ] { 2, 3, 0 } } );
             floor = floorBuilder.GetModel( );
-            floor.Meshes.First( ).Material.Diffuse = Color4.Gray;
+            floor.Meshes.First( ).Material.Diffuse = new Color( 0.5f, 0.5f, 0.5f );
 
             world = new World( );
             world.AddModel( mdl );
@@ -84,7 +84,8 @@ namespace TracerGL
 
             Model sphere = Util.CreateSphere( 1.5f, 32, 32 );
             world.AddModel( sphere );
-            sphere.Meshes.First( ).Material.Diffuse = Color4.DarkRed;
+            sphere.Meshes.First( ).Material.Diffuse = new Color( 0.3f, 0.3f, 0 );
+            sphere.Meshes.First( ).Material.Emission = new Color( 40, 20, 0 );
 
             GL.ClearColor( Color4.CornflowerBlue );
 
@@ -167,9 +168,6 @@ namespace TracerGL
 
             if ( Keyboard[ Key.D ] )
                 cam.Transform.Position += cam.Transform.Right * ( float ) e.Time * 10;
-
-            //mdl2.Transform.Rotation.Roll += (float)e.Time * 25;
-            mdl2.Transform.Rotation.AddRotation( 0, 0, ( float ) e.Time * 25 );
         }
 
         protected override void OnRenderFrame( FrameEventArgs e )

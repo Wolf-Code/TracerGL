@@ -4,6 +4,7 @@ using System.IO;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
+using TracerRenderer.Data;
 
 namespace TracerRenderer
 {
@@ -126,6 +127,16 @@ namespace TracerRenderer
         {
             int loc = GetUniformLocation( name );
             GL.Uniform4( loc, color );
+        }
+
+        /// <summary>
+        /// Sets a vec4 inside the shader to a given color.
+        /// </summary>
+        /// <param name="name">The name of the color in the shader.</param>
+        /// <param name="color">The color.</param>
+        public void SetColor( string name, Color color )
+        {
+            this.SetColor4( name, color.ToColor4( ) );
         }
 
         private void CheckIfCurrentShader( )

@@ -50,6 +50,7 @@
     <Compile Include="CollisionObjects\Triangle.cs" />
     <Compile Include="Data\Angle.cs" />
     <Compile Include="Data\CollisionObject.cs" />
+    <Compile Include="Data\Color.cs" />
     <Compile Include="Data\HitResult.cs" />
     <Compile Include="Data\Material.cs" />
     <Compile Include="Data\Mesh.cs" />
@@ -72,6 +73,7 @@
     <Compile Include="Renderers\OpenGLRenderer.cs" />
     <Compile Include="Renderers\PathTracingRenderer.cs" />
     <Compile Include="Shader.cs" />
+    <Compile Include="ThreadRandom.cs" />
     <Compile Include="Util.cs" />
   </ItemGroup>
   <ItemGroup>

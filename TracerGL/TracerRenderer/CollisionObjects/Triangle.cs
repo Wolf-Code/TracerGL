@@ -1,4 +1,5 @@
-﻿using OpenTK;
+﻿using System;
+using OpenTK;
 using TracerRenderer.Data;
 
 namespace TracerRenderer.CollisionObjects
@@ -62,7 +63,8 @@ namespace TracerRenderer.CollisionObjects
             Res.Distance = t;
             Res.Position = ray.Start + ray.Direction * t;
             float w = 1.0f - ( u + v );
-            Res.Normal = Vector3.Normalize( w * V1.Normal + u * V2.Normal + v * V3.Normal );
+            //Res.Normal = Vector3.Normalize( w * V1.Normal + u * V2.Normal + v * V3.Normal );
+            Res.Normal = Vector3.Normalize( Vector3.Cross( ( v2 - v1 ), ( v3 - v1 ) ) );
 
             if ( Vector3.Dot( ray.Direction, Res.Normal ) > 0 )
                 Res.Normal = Res.Normal * -1;
