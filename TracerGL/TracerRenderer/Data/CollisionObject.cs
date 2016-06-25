@@ -1,4 +1,6 @@
-﻿namespace TracerRenderer.Data
+﻿using OpenTK;
+
+namespace TracerRenderer.Data
 {
     /// <summary>
     /// A collision object which contains a method to check for intersection with a ray.
@@ -9,6 +11,11 @@
         /// The transform of this <see cref="CollisionObject"/>.
         /// </summary>
         public Transform Transform { private set; get; }
+        
+        /// <summary>
+        /// The world position of the collision object.
+        /// </summary>
+        protected Vector3 WorldPosition => Vector3.Transform( this.Transform.Position, this.Mesh.Transform.GetMatrix( ) );
 
         /// <summary>
         /// The parent model.

@@ -23,10 +23,12 @@ namespace TracerRenderer.CollisionObjects
         {
             HitResult res = new HitResult( );
 
-            float A = Vector3.Dot( ray.Direction, ray.Direction );
-            float B = 2 * Vector3.Dot( ray.Direction, ray.Start - this.Transform.Position );
-            float C = ( ray.Start - this.Transform.Position ).LengthSquared - ( this.Radius * this.Radius );
+            Vector3 worldPos = this.WorldPosition;
 
+            float A = Vector3.Dot( ray.Direction, ray.Direction );
+            float B = 2 * Vector3.Dot( ray.Direction, ray.Start - worldPos );
+            float C = ( ray.Start - worldPos ).LengthSquared - ( this.Radius * this.Radius );
+            
             float Discriminant = B * B - 4 * A * C;
             if ( Discriminant < 0 )
                 return res;
@@ -55,7 +57,7 @@ namespace TracerRenderer.CollisionObjects
             res.Distance = T0 < 0 ? T1 : T0;
             res.Hit = true;
             res.Position = ray.Start + ray.Direction * res.Distance;
-            res.Normal = ( res.Position - this.Transform.Position ).Normalized( );
+            res.Normal = ( res.Position - worldPos ).Normalized( );
             res.Mesh = this.Mesh;
 
             return res;

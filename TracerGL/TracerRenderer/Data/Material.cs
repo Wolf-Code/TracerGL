@@ -1,4 +1,6 @@
-﻿using OpenTK.Graphics;
+﻿using System;
+using OpenTK;
+using OpenTK.Graphics;
 
 namespace TracerRenderer.Data
 {
@@ -16,5 +18,10 @@ namespace TracerRenderer.Data
         /// The emission of the material.
         /// </summary>
         public Color Emission { set; get; } = new Color( );
+
+        public float CosTheta( Vector3 outDirection, Vector3 normal )
+        {
+            return Math.Abs( Vector3.Dot( outDirection, normal ) );
+        }
     }
 }

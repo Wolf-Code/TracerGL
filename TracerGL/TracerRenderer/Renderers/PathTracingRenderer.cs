@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net.WebSockets;
 using System.Threading.Tasks;
 using OpenTK;
-using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using TracerRenderer.Data;
 
@@ -121,30 +119,36 @@ namespace TracerRenderer.Renderers
         public Color Trace( Ray ray, List<CollisionObject> colliders, List<CollisionObject> lights )
         {
             HitResult closest = GetIntersection( ray, colliders );
-
-            Color col = new Color(  );
+            
             Color throughput = new Color( 1, 1, 1 );
 
             for ( int x = 0; x < MaxDepth; x++ )
             {
                 if ( !closest.Hit )
                 {
-                    return col * throughput + Environment( ray ) * throughput;
+                    return Environment( ray ) * throughput;
                 }
 
                 if ( closest.Mesh.Material.Emission.HasValue )
-                    col += closest.Mesh.Material.Emission;
-
-                throughput *= closest.Mesh.Material.Diffuse;
+                    return throughput * closest.Mesh.Material.Emission;
 
                 if ( !closest.Hit )
                     break;
 
-                ray = new Ray( closest.Position + closest.Normal * float.Epsilon, PathTraceUtil.RandomDirectionInSameHemisphere( ray.Direction ) );
+                throughput *= closest.Mesh.Material.Diffuse;
+
+                Vector3 newDir = PathTraceUtil.RandomDirectionInSameHemisphere( closest.Normal );
+
+                float cosTheta = closest.Mesh.Material.CosTheta( newDir, closest.Normal );
+
+                throughput *= cosTheta;
+
+                ray.Start = closest.Position + closest.Normal * float.Epsilon;
+                ray.Direction = newDir;
                 closest = GetIntersection( ray, colliders );
             }
 
-            return col * throughput;
+            return throughput;
         }
 
         private void RenderBufferToTexture( )
@@ -165,9 +169,16 @@ namespace TracerRenderer.Renderers
             {
                 img = new byte[ pixelCount * 3 ];
                 colors = new Color[ pixelCount ];
-                for ( int x = 0; x < colors.Length; x++ )
-                    colors[ x ] = new Color( );
+                ResetRender(  );
             }
+        }
+
+        private void ResetRender( )
+        {
+            for ( int x = 0; x < colors.Length; x++ )
+                colors[ x ] = new Color( );
+
+            frames = 0;
         }
     }
 }

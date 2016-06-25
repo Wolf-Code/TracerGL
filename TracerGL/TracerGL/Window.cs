@@ -13,7 +13,7 @@ namespace TracerGL
 {
     class Window : GameWindow
     {
-        private Model mdl, mdl2, mdl3, floor, quad;
+        private Model quad;
         private Camera cam;
         private Shader textured;
         private OpenGLRenderer glRenderer;
@@ -29,22 +29,6 @@ namespace TracerGL
 
             Vertex[ ] vertices = { v1, v2, v3 };
             Face[ ] faces = { new Face { Vertices = new uint[ ] { 0, 1, 2 } } };
-
-            mdl = new Model( );
-            Mesh mdlMesh = new Mesh( mdl );
-            mdlMesh.SetTrianglesWithCollider( vertices, faces );
-
-            mdl2 = new Model( );
-            Mesh mdlMesh2 = new Mesh( mdl2 );
-            mdlMesh2.SetTrianglesWithCollider( vertices, faces );
-            mdl2.Transform.Position = new Vector3( 5, 0, 0 );
-            mdl2.Transform.Rotation = new Angle( -45, -30, -20 );
-
-            mdl3 = new Model( );
-            Mesh mdlMesh3 = new Mesh( mdl3 );
-            mdlMesh3.SetTrianglesWithCollider( vertices, faces );
-            mdl3.Transform.Position = new Vector3( 0, 0, 2.5f );
-            mdl3.Meshes.First().Material.Diffuse = new Color( 0.4f,0.8f,0.3f );
 
             ModelBuilder floorBuilder = new ModelBuilder( );
             floorBuilder.AddVertex( new Vertex
@@ -73,19 +57,22 @@ namespace TracerGL
             } );
             floorBuilder.AddFace( new Face { Vertices = new uint[ ] { 0, 1, 2 } } );
             floorBuilder.AddFace( new Face { Vertices = new uint[ ] { 2, 3, 0 } } );
-            floor = floorBuilder.GetModel( );
+            Model floor = floorBuilder.GetModel( );
             floor.Meshes.First( ).Material.Diffuse = new Color( 0.5f, 0.5f, 0.5f );
 
-            world = new World( );
-            world.AddModel( mdl );
-            world.AddModel( mdl2 );
-            world.AddModel( mdl3 );
-            world.AddModel( floor );
+            Model sphere = Util.CreateSphere( 5000f, 16, 16 );
+            sphere.Transform.Position = new Vector3( 0, 7000, 0 );
+            sphere.Meshes.First( ).Material.Diffuse = new Color( 0.3f, 0.3f, 0.1f );
+            sphere.Meshes.First( ).Material.Emission = new Color( 40, 10, 0 );
 
-            Model sphere = Util.CreateSphere( 1.5f, 32, 32 );
+            Model sphereTop = Util.CreateSphere( 1f, 16, 16 );
+            sphereTop.Transform.Position = new Vector3( 2f, 1f, 0 );
+            sphereTop.Meshes.First().Material.Diffuse = new Color( 0.8f, 0.8f, 0.8f );
+
+            world = new World( );
+            world.AddModel( floor );
             world.AddModel( sphere );
-            sphere.Meshes.First( ).Material.Diffuse = new Color( 0.3f, 0.3f, 0 );
-            sphere.Meshes.First( ).Material.Emission = new Color( 40, 20, 0 );
+            world.AddModel( sphereTop );
 
             GL.ClearColor( Color4.CornflowerBlue );
 

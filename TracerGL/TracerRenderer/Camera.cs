@@ -22,7 +22,7 @@ namespace TracerRenderer
         {
             this.m_aspect = 1.0f;
             this.m_near = 1;
-            this.m_far = 1000;
+            this.m_far = 10000;
             this.SetFOV( 70 );
 
             RenderTarget = new RenderTarget( width, height );

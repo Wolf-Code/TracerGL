@@ -40,6 +40,11 @@ namespace TracerRenderer.Data
             return new Color( col1.R * col2.R, col1.G * col2.G, col1.B * col2.B );
         }
 
+        public static Color operator *( Color col, float mul )
+        {
+            return new Color( col.R * mul, col.G * mul, col.B * mul );
+        }
+
         public Color4 ToColor4( )
         {
             return new Color4( R, G, B, 1f );
