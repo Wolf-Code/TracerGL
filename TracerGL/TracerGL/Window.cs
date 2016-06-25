@@ -60,19 +60,29 @@ namespace TracerGL
             Model floor = floorBuilder.GetModel( );
             floor.Meshes.First( ).Material.Diffuse = new Color( 0.5f, 0.5f, 0.5f );
 
-            Model sphere = Util.CreateSphere( 5000f, 16, 16 );
-            sphere.Transform.Position = new Vector3( 0, 7000, 0 );
-            sphere.Meshes.First( ).Material.Diffuse = new Color( 0.3f, 0.3f, 0.1f );
-            sphere.Meshes.First( ).Material.Emission = new Color( 40, 10, 0 );
+            Model sphere = Util.CreateSphere( 0.4f, 16, 16 );
+            sphere.Transform.Position = new Vector3( 0, 0.5f, 0 );
+            sphere.Meshes.First( ).Material.Emission = new Color( 70, 70, 70 );
 
-            Model sphereTop = Util.CreateSphere( 1f, 16, 16 );
-            sphereTop.Transform.Position = new Vector3( 2f, 1f, 0 );
-            sphereTop.Meshes.First().Material.Diffuse = new Color( 0.8f, 0.8f, 0.8f );
+            Model sphere2 = Util.CreateSphere( 1f, 16, 16 );
+            sphere2.Transform.Position = new Vector3( 2f, 1f, 0 );
+            sphere2.Meshes.First().Material.Diffuse = new Color( 0.8f, 0.8f, 0.8f );
+
+            Model sphere3 = Util.CreateSphere( 1f, 16, 16 );
+            sphere3.Transform.Position = new Vector3( -2f, 1f, 0 );
+            sphere3.Meshes.First( ).Material.Diffuse = new Color( 0.9f, 0.3f, 0.1f );
+            sphere3.Meshes.First( ).Material.Type = Material.MaterialType.Reflective;
+
+            Model sphere4 = Util.CreateSphere( 1f, 16, 16 );
+            sphere4.Transform.Position = new Vector3( 0f, 3f, 0 );
+            sphere4.Meshes.First( ).Material.Diffuse = new Color( 0.3f, 0.5f, 0.8f );
 
             world = new World( );
             world.AddModel( floor );
             world.AddModel( sphere );
-            world.AddModel( sphereTop );
+            world.AddModel( sphere2 );
+            world.AddModel( sphere3 );
+            world.AddModel( sphere4 );
 
             GL.ClearColor( Color4.CornflowerBlue );
 
@@ -117,7 +127,7 @@ namespace TracerGL
             }, new[ ] { new Face { Vertices = new uint[ ] { 0, 1, 2, 2, 3, 0 } } } );
             quadMesh.Shader = textured;
 
-            traceRenderer = new PathTracingRenderer( 128, 128 );
+            traceRenderer = new PathTracingRenderer( 200, 200 );
             glRenderer = new OpenGLRenderer( );
 
             renderer = glRenderer;
@@ -137,7 +147,7 @@ namespace TracerGL
             {
                 Transform = new Transform( cam.Transform.Position, cam.Transform.Rotation )
             };
-            cam.SetFOV( 50 );
+            cam.SetFOV( 70 );
         }
 
         protected override void OnUpdateFrame( FrameEventArgs e )

@@ -20,6 +20,8 @@ namespace TracerRenderer.Data
             get { return position; }
         }
 
+        public Vector3 WorldPosition => Vector3.Transform( this.position, this.GetMatrix( ) );
+
         public EventHandler<Vector3> OnPositionChanged;
         public EventHandler<Angle> OnRotationChanged;  
 

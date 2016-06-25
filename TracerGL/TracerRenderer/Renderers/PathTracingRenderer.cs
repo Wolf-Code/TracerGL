@@ -34,7 +34,7 @@ namespace TracerRenderer.Renderers
 
         public PathTracingRenderer( int width, int height )
         {
-            MaxDepth = 10;
+            MaxDepth = 4;
             frames = 0;
 
             shader = new Shader( );
@@ -125,23 +125,17 @@ namespace TracerRenderer.Renderers
             for ( int x = 0; x < MaxDepth; x++ )
             {
                 if ( !closest.Hit )
-                {
                     return Environment( ray ) * throughput;
-                }
 
                 if ( closest.Mesh.Material.Emission.HasValue )
                     return throughput * closest.Mesh.Material.Emission;
 
-                if ( !closest.Hit )
-                    break;
 
-                throughput *= closest.Mesh.Material.Diffuse;
-
-                Vector3 newDir = PathTraceUtil.RandomDirectionInSameHemisphere( closest.Normal );
-
+                Vector3 newDir = closest.Mesh.Material.GetNewRay( closest.Normal, ray.Direction );
                 float cosTheta = closest.Mesh.Material.CosTheta( newDir, closest.Normal );
+                float brdf = closest.Mesh.Material.BRDF( ray.Direction, newDir, closest.Normal );
 
-                throughput *= cosTheta;
+                throughput *= closest.Mesh.Material.Diffuse * cosTheta * brdf;
 
                 ray.Start = closest.Position + closest.Normal * float.Epsilon;
                 ray.Direction = newDir;
