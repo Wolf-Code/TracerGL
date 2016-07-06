@@ -119,7 +119,7 @@ namespace TracerRenderer.Renderers
         public Color Trace( Ray ray, List<CollisionObject> colliders, List<CollisionObject> lights )
         {
             HitResult closest = GetIntersection( ray, colliders );
-            
+
             Color throughput = new Color( 1, 1, 1 );
 
             for ( int x = 0; x < MaxDepth; x++ )
@@ -130,8 +130,8 @@ namespace TracerRenderer.Renderers
                 if ( closest.Mesh.Material.Emission.HasValue )
                     return throughput * closest.Mesh.Material.Emission;
 
-
                 Vector3 newDir = closest.Mesh.Material.GetNewRay( closest.Normal, ray.Direction );
+
                 float cosTheta = closest.Mesh.Material.CosTheta( newDir, closest.Normal );
                 float brdf = closest.Mesh.Material.BRDF( ray.Direction, newDir, closest.Normal );
 

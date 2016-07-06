@@ -90,6 +90,7 @@ namespace TracerGL
             {
                 Transform = new Transform( new Vector3( 0, 0, 10 ) )
             };
+            cam.SetFOV( 70 );
 
             Mouse.Move += ( sender, args ) =>
             {
@@ -143,11 +144,7 @@ namespace TracerGL
             GL.Viewport( 0, 0, Width, Height );
             cam.SetAspect( Width / ( float ) Height );
 
-            cam = new Camera( Width, Height )
-            {
-                Transform = new Transform( cam.Transform.Position, cam.Transform.Rotation )
-            };
-            cam.SetFOV( 70 );
+            cam.ResizeRenderTarget( Width, Height );
         }
 
         protected override void OnUpdateFrame( FrameEventArgs e )

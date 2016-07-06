@@ -3,7 +3,7 @@ using OpenTK.Graphics.OpenGL;
 
 namespace TracerRenderer.Data
 {
-    public class RenderTarget
+    public class RenderTarget : IDisposable
     {
         private readonly int frameBuffer;
 
@@ -128,6 +128,13 @@ namespace TracerRenderer.Data
         public void Unbind( )
         {
             GL.Ext.BindFramebuffer( FramebufferTarget.DrawFramebuffer, 0 );
+        }
+
+        public void Dispose( )
+        {
+            GL.DeleteBuffer( frameBuffer );
+            GL.DeleteTexture( ColorTexture );
+            GL.DeleteTexture( DepthTexture );
         }
     }
 }

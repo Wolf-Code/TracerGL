@@ -28,6 +28,19 @@ namespace TracerRenderer
             RenderTarget = new RenderTarget( width, height );
         }
 
+        /// <summary>
+        /// Resizes the camera's render target.
+        /// </summary>
+        /// <param name="width">The new width of the render target.</param>
+        /// <param name="height">The new height of the render target.</param>
+        public void ResizeRenderTarget( int width, int height )
+        {
+            if ( RenderTarget.Width == width && RenderTarget.Height == height )
+                return;
+            
+            RenderTarget = new RenderTarget( width, height );
+        }
+
         public void SetAspect( float aspect )
         {
             this.m_aspect = aspect;
@@ -76,6 +89,11 @@ namespace TracerRenderer
         public void BindForRendering( )
         {
             RenderTarget.Bind( );
+        }
+
+        ~Camera( )
+        {
+            this.RenderTarget.Dispose( );
         }
     }
 }

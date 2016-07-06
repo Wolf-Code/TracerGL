@@ -72,11 +72,19 @@ namespace TracerRenderer
 
         }
 
+        /// <summary>
+        /// Creates a random float between 0 and 1.
+        /// </summary>
+        /// <returns>A random float between 0 and 1.</returns>
         public static float NextFloat( )
         {
             return ( float )NextDouble( );
         }
 
+        /// <summary>
+        /// Creates a random float between -1 and 1.
+        /// </summary>
+        /// <returns>A random float between -1 and 1.</returns>
         public static float NextNegPosFloat( )
         {
             return NextFloat( ) * 2f - 1f;

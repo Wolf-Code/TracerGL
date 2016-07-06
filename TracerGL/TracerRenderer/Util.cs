@@ -37,6 +37,13 @@ namespace TracerRenderer
             GL.BindTexture( TextureTarget.Texture2D, 0 );
         }
 
+        /// <summary>
+        /// Creates a sphere model.
+        /// </summary>
+        /// <param name="radius">The radius of the sphere.</param>
+        /// <param name="segments">The amount of segments in the sphere.</param>
+        /// <param name="rings">The amount of rings in the sphere.</param>
+        /// <returns>The <see cref="Model"/> representing the sphere.</returns>
         public static Model CreateSphere( float radius, byte segments, byte rings )
         {
             Vertex[ ] data = new Vertex[ segments * rings ];
